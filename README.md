@@ -24,7 +24,7 @@ results of the study, 1 TB of space should safely cover the memory requirements
 from the data downloaded/generated. This space requirement is lower if not using
 CMIP6 climate simulation data for pre-training (around 250 GB).
 
-#### 0) Preliminary setup
+### 0) Preliminary setup
 
 These instructions assume you have conda installed. If you don't yet
 have conda, you can download it
@@ -123,7 +123,7 @@ using `python3 icenet/gen_tfrecords_obs_train_val_datasets.py`. The source of
 observational data for training is controlled by bools in
 `icenet/train_icenet.py`.
 
-#### 4) Develop the IceNet model
+### 4) Develop the IceNet model
 
 #### 4.1) OPTIONAL: Run the hyperparameter search (skip if using default values from paper)
 
@@ -187,7 +187,7 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 - `icenet/callbacks.py` defines training callbacks.
 - `icenet/metrics.py` defines training metrics.
 
-#### Example output from `tree -r`
+### Project structure: simplified output from `tree -r`
 
 ```
 .
