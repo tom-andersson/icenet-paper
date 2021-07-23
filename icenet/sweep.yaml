@@ -1,0 +1,27 @@
+program: icenet/train_icenet.py
+project: icenet
+name: bayes_sweep
+method: bayes
+metric:
+  name: val_acc_mean
+  goal: maximize
+early_terminate:
+  type: envelope
+parameters:
+  learning_rate:
+    distribution: log_uniform
+    min: -11.5129
+    max: -4.605
+  n_filters_factor:
+    distribution: log_uniform
+    min: -0.693
+    max: 0.693
+  batch_size:
+    distribution: categorical
+    values: [1, 2, 4]
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - "--wandb"
+  - ${args}
