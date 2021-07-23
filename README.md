@@ -217,7 +217,6 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 │   │       ├── EASE
 │   │       └── latlon
 │   ├── masks
-│   ├── masks-temp
 │   ├── network_datasets
 │   │   └── dataset1
 │   └── obs
