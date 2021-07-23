@@ -140,7 +140,7 @@ built up on the [wandb.ai](https://wandb.ai/home) page.
 hyperameter settings and the random seed for network weight initalisation as
 commandline inputs. Run this multiple times with different settings of `--seed`
 to train an ensemble. Trained networks are saved in
-`trained_networks/<dataloader_ID>/<architecture_ID>/networks/`. If worked on a
+`trained_networks/<dataloader_ID>/<architecture_ID>/networks/`. If working on a
 shared machine and familiar with SLURM, you may want to wrap this command in a
 SLURM script.
 
