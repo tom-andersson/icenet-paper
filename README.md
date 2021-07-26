@@ -126,16 +126,16 @@ training phase compared with using the data loader. To benefit from this, run
 `python3 icenet/gen_numpy_obs_train_val_datasets.py` to generate NumPy tensors
 for the train/val input/output data. To further benefit from the training speed
 improvements of `tf.data`, generate a TFRecords dataset from the NumPy tensors
-using `python3 icenet/gen_tfrecords_obs_train_val_datasets.py`. The source of
-observational data for training is controlled by bools in
+using `python3 icenet/gen_tfrecords_obs_train_val_datasets.py`. Whether to use
+the data loader, NumPy arrays, or TfRecords datasets for training is controlled by bools in
 `icenet/train_icenet.py`.
 
 ### 4) Develop the IceNet model
 
 #### 4.1) OPTIONAL: Run the hyperparameter search (skip if using default values from paper)
 
-- Set `icenet/train_icenet.py` up for hyperparameter tuning. Turn off pre-training
-and temperature scaling in the user input section.
+- Set `icenet/train_icenet.py` up for hyperparameter tuning: Set pre-training
+and temperature scaling bools to False the user input section.
 - `wandb sweep icenet/sweep.yaml`
 - Then run the `wandb agent` command that is printed.
 - Cancel the sweep after a sufficient picture on optimal hyperparameters is
