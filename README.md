@@ -24,6 +24,9 @@ the commandline of a Unix-like machine with a GPU. If aiming to reproduce the
 results of the study, 1 TB of space should safely cover the memory requirements
 from the data downloaded and generated.
 
+If you run into any issues with this codebase please email me (tomand@bas.ac.uk) or
+raise an issue.
+
 ### 0) Preliminary setup
 
 I use conda for package management. If you don't yet
@@ -226,6 +229,7 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 │   └── obs
 ├── dataloader_configs
 ├── figures
+├── icenet
 ├── logs
 │   ├── cmip6_download_logs
 │   ├── era5_download_logs
