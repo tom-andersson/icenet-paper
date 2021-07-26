@@ -1,5 +1,5 @@
 {
-  "dataloader_ID": "icenet_nature_communications",
+  "dataloader_name": "icenet_nature_communications",
   "dataset_name": "dataset1",
   "input_data": {
     "siconca": {
