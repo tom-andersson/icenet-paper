@@ -15,12 +15,25 @@ from utils import assignLatLonCoordSystem, fix_near_real_time_era5_func, \
     xarray_to_video
 
 """
-Script to download monthly-averaged ERA5 reanalysis latitude-longitude maps,
-regrid them to the same EASE grid as the NSIDC sea ice data, and
-split them into monthly NetCDF files in the data folder.
+Script to download monthly-averaged ERA5 reanalysis variables from the Climate
+Data Store (CDS) and regrid them from latitude/longitude to the same EASE grid
+as the OSI-SAF sea ice data.
 
-The `variables` dictionary controls which NetCDF variables are downloaded/
-regridded, as well their paths/filenames.
+Single-level (surface) variables:
+https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels-monthly-means?tab=overview
+
+Pressure-level variables:
+https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels-monthly-means?tab=overview
+
+The --var command line input controls which variable to download (using CMIP6
+variable naming convention:
+https://docs.google.com/spreadsheets/d/1UUtoz6Ofyjlpx5LdqhKcwHFz2SGoTQV2_yekHyMfL9Y/edit#gid=1221485271.
+The `variables` dict maps from CMIP6 variable names to the CDS naming scheme.
+
+See download_era5_data_in_parallel.sh to download and regrid multiple
+variables in parallel using this script.
+
+Files are saved to ./data/obs/ in <var>_EASE.nc format.
 
 You need to have set up your ~/.cdsapirc file before running this - see the
 README.

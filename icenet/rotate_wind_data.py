@@ -11,8 +11,12 @@ import utils
 import argparse
 
 """
-Script to rotate and regrid ERA5 and CMIP6 wind vector data in lat-lon format to the EASE
-grid. Replaces the uas_EASE and vas_EASE files with their rotated counterparts.
+Script to rotate ERA5 and CMIP6 wind vector data to the EASE grid. Replaces the
+uas_EASE and vas_EASE files with their rotated counterparts.
+
+The rotate_wind_data_in_parallel.sh bash scipt runs this script in parallel for
+the ERA5 and all climate simulation data in parallel. Note this can have heavy
+CPU demand!
 """
 
 ################################################################################
@@ -123,21 +127,6 @@ if gen_video:
             figsize=7,
             dpi=100,
         )
-
-# TEMP: commenting out for now, because I think utils.rotate_grid_vectors
-#   operates on views rather than copies, so the before and after cubes
-#   are identical.
-# if verify_wind_magnitude:
-#     ease_speed = np.sqrt(wind_cubes['uas'].data.data**2 + wind_cubes['vas'].data.data**2)
-#
-#     ease_rotated_speed = np.sqrt(wind_cubes_r['uas'].data.data**2 +
-#                                  wind_cubes_r['vas'].data.data**2)
-#
-#     print('Are u-components identical after rotation (i.e. rotation failed)?: {}'.format(
-#         np.all(np.isclose(wind_cubes['uas'].data.data, wind_cubes_r['uas'].data.data))))
-#
-#     print('Are the wind speeds the same after rotation?: {}'.format(
-#         np.all(np.isclose(ease_speed, ease_rotated_speed))))
 
 toc = time.time()
 print("Done in {:.3f}s.".format(toc - tic))

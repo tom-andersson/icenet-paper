@@ -12,8 +12,17 @@ import numpy as np
 import argparse
 
 '''
-Script to download SEAS5 sea ice concentration (SIC) forecast data from ECMWF and regrid
-to the EASE grid using iris.
+Script to download 2001-2020 SEAS5 sea ice concentration (SIC) forecast data
+from ECMWF and regrid to the EASE grid using iris. All 25 ensemble members are
+downloaded. To obtain manageable download sizes, a single monthly forecast lead
+time is downloaded at a time (controlled by the --leadtime command line input).
+
+This script requires you to have created and ECMWF account and emailed the
+Computing Representative to upgrate your account to access ECMWF MARS Catalog
+data. See the README.
+
+The download_seas5_forecasts_in_parallel.sh bash script runs this script in
+parallel to download each lead time in [1, ..., 6] simultaneously.
 '''
 
 ################################################################################

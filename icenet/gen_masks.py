@@ -13,7 +13,14 @@ import matplotlib as mpl
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 '''
-Docstring TODO
+Obtains masks for land, the polar holes, OSI-SAF monthly maximum ice extent (the 'active
+grid cell region'), and the Arctic regions & coastline. Figures of the
+masks are saved in the figures/ folder.
+
+The polar hole radii were determined from Sections 2.1, 2.2, and 2.3 of
+http://osisaf.met.no/docs/osisaf_cdop3_ss2_pum_sea-ice-conc-climate-data-record_v2p0.pdf
+
+Region mask: https://nsidc.org/data/polar-stereo/tools_masks.html#region_masks
 '''
 
 ###############################################################################
@@ -22,7 +29,7 @@ save_active_grid_cell_masks = True  # Save the monthly land-lake-ocean masks for
 save_land_mask = True  # Save the land mask (constant across months)
 save_arctic_region_mask = True  # Save Arctic region mask from NSIDC, with coastline cells
 save_polarhole_masks = True  # Save the polarhole masks
-save_figures = True  # Figures of the max extent masks
+save_figures = True  # Figures of the max extent/region masks
 
 temp_ice_data_folder = os.path.join(config.mask_data_folder, 'temp')
 
@@ -34,7 +41,7 @@ retrieve_cmd_template_osi450 = 'wget --quiet -m -nH --cut-dirs=4 -P ' + temp_ice
 filename_template_osi450 = 'ice_conc_nh_ease2-250_cdr-v2p0_{:04d}{:02d}021200.nc'
 
 #### Generate the land-lake-sea mask using the second day from each month of
-#### the year 2000 (chosen arbitrarily as the mask is fixed within month)
+#### the year 2000 (chosen arbitrarily as the mask is fixed within a calendar month)
 ###############################################################################
 
 print("Generating active grid cell region & and masks\n")
@@ -45,6 +52,9 @@ if save_figures:
     fig_folder = os.path.join(config.figure_folder, 'max_extent_masks')
     if not os.path.exists(fig_folder):
         os.makedirs(fig_folder)
+
+#### Active grid cell masks and land mask
+###############################################################################
 
 for month in range(1, 13):
 
@@ -65,6 +75,10 @@ for month in range(1, 13):
             status_flag = np.array(status_flag.data).astype(np.uint8)
             status_flag = status_flag.reshape(432, 432)
 
+            # See status flag definition in Table 4 of OSI-SAF documention:
+            #   http://osisaf.met.no/docs/osisaf_cdop3_ss2_pum_sea-ice-conc-climate-data-record_v2p0.pdf
+            #   Note 'Bit Nr' corresponds to leftmost bit in the byte (e.g. Bit Nr 0
+            #   is index 7)
             binary = np.unpackbits(status_flag, axis=1).reshape(432, 432, 8)
 
             # Mask out: land, lake, and 'outside max climatology' (i.e. open sea)
@@ -256,8 +270,9 @@ if save_arctic_region_mask:
     os.remove(sic_day_fpath)
     os.remove(region_file_path)
 
-#### Polare hole masks
+#### Polar hole masks
 ###############################################################################
+
 if save_polarhole_masks:
 
     print("Generating polar hole masks\n")

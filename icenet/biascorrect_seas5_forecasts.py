@@ -9,8 +9,8 @@ import time
 import numpy as np
 
 '''
-Script to compute SEAS5 bias correction fields, bias correct the ensemble mean
-sea ice concentration (SIC) forecasts and the sea ice probability (SIP) forecasts,
+Script to compute SEAS5 bias correction fields; bias correct the ensemble-mean
+sea ice concentration (SIC) forecasts and the sea ice probability (SIP) forecasts;
 and save in the SEAS5 forecast folder.
 '''
 

@@ -7,6 +7,7 @@ import pandas as pd
 import xarray as xr
 import time
 import numpy as np
+from scipy import interpolate
 
 '''
 Downloads OSI-SAF SIC data from 1979-present using OpenDAP.
@@ -94,12 +95,12 @@ for date in tqdm(dates):
         y_interp = yy[polarhole_mask]
 
         values = da.loc[date].data[valid]
-        from scipy import interpolate
 
         interp_vals = interpolate.griddata((x, y), values, (x_interp, y_interp), method='linear')
         interpolated_array = da.loc[date].data.copy()
         interpolated_array[polarhole_mask] = interp_vals
         da.loc[date].data = interpolated_array
+
 dur = time.time() - tic
 print("Done in {}m:{:.0f}s.\n\n ".format(np.floor(dur / 60), dur % 60))
 

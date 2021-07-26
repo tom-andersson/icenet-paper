@@ -10,6 +10,32 @@ import config
 import argparse
 import utils
 
+'''
+Script to download monthly-averaged CMIP6 climate simulation runs from the Earth
+System Grid Federation (ESFG):
+https://esgf-node.llnl.gov/search/cmip6/.
+The simulations are regridded from latitude/longitude to the same EASE grid as
+the OSI-SAF sea ice data.
+
+The --source_id and --member_id command line inputs control which climate model
+and model run to download.
+
+The `download_dict` dictates which variables to download from each climate
+model. Entries within the variable dictionaries of `variable_dict` provide
+further specification for the variable to download - e.g. whether it is on an
+ocean grid and whether to download data at a specified pressure level. All this
+information is used to create the `query` dictionary that is passed to
+utils.esgf_search to find download links for the variable. The script loops
+through each variable, downloading those for which 'include' is True in the
+variable dictionary.
+
+Variable files are saved to ./cmip6/<source_id>/<member_id>/ in <var>_EASE_cmpr.nc
+format.
+
+See download_cmip6_data_in_parallel.sh to download and regrid multiple climate
+simulations in parallel using this script.
+'''
+
 #### COMMAND LINE INPUT
 # --------------------------------------------------------------------
 
@@ -21,9 +47,6 @@ commandline_args = parser.parse_args()
 source_id = commandline_args.source_id
 member_id = commandline_args.member_id
 
-# source_id = 'EC-Earth3'
-# member_id = 'r2i1p1f1'
-
 print('\n\nDownloading data for {}, {}\n'.format(source_id, member_id))
 
 ####### User download options
@@ -33,7 +56,7 @@ overwrite = False
 delete_latlon_data = True  # Delete lat-lon intermediate files is use_xarray is True
 compress = True
 
-do_download = False
+do_download = True
 do_regrid = True
 gen_video = True
 
@@ -44,43 +67,43 @@ download_dict = {
         'frequency': 'mon',
         'variable_dict': {
             'siconca': {
-                'include': False,
+                'include': True,
                 'table_id': 'SImon',
                 'plevels': None
             },
             'tas': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'ta': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': [500_00]
             },
             'tos': {
-                'include': False,
+                'include': True,
                 'table_id': 'Omon',
                 'plevels': None,
-                'ocean_variable': False
+                'ocean_variable': True
             },
             'psl': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'rsus': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'rsds': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'zg': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': [500_00, 250_00]
             },
@@ -95,7 +118,7 @@ download_dict = {
                 'plevels': None
             },
             'ua': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': [10_00]
             },
@@ -107,43 +130,43 @@ download_dict = {
         'frequency': 'mon',
         'variable_dict': {
             'siconca': {
-                'include': False,
+                'include': True,
                 'table_id': 'SImon',
                 'plevels': None
             },
             'tas': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'ta': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': [500_00]
             },
             'tos': {
-                'include': False,
+                'include': True,
                 'table_id': 'Omon',
                 'plevels': None,
-                'ocean_variable': False
+                'ocean_variable': True
             },
             'psl': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'rsus': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'rsds': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': None
             },
             'zg': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': [500_00, 250_00]
             },
@@ -158,7 +181,7 @@ download_dict = {
                 'plevels': None
             },
             'ua': {
-                'include': False,
+                'include': True,
                 'table_id': 'Amon',
                 'plevels': [10_00]
             },

@@ -1,6 +1,10 @@
 import os
 import pandas as pd
 
+'''
+Defines globals used throughout the codebase.
+'''
+
 ###############################################################################
 ### Folder structure naming system
 ###############################################################################
@@ -34,6 +38,8 @@ region_mask_filename = 'region_mask.npy'
 ###############################################################################
 
 # Pre-defined polar hole radii (in number of 25km x 25km grid cells)
+#   The polar hole radii were determined from Sections 2.1, 2.2, and 2.3 of
+#   http://osisaf.met.no/docs/osisaf_cdop3_ss2_pum_sea-ice-conc-climate-data-record_v2p0.pdf
 polarhole1_radius = 28
 polarhole2_radius = 11
 polarhole3_radius = 3
