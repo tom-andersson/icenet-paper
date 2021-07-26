@@ -26,4 +26,4 @@ dependencies:
   - requests=2.25
   - pip=19
   - pip:
-    - ecmwf-api-client=1.5
+    - ecmwf-api-client==1.5
