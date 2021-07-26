@@ -40,7 +40,7 @@ class IceNetDataPreProcessor(object):
     """
 
     def __init__(self, dataloader_config_fpath, preproc_vars,
-                 n_linear_years, minmax, verbose_level, raw_data_shape,
+                 n_linear_years, minmax, verbose_level,
                  preproc_obs_data=True,
                  preproc_transfer_data=False, cmip_transfer_data={}):
         """
@@ -78,8 +78,6 @@ class IceNetDataPreProcessor(object):
         verbose_level (int): Controls how much to print. 0: Print nothing.
         1: Print key set-up stages. 2: Print debugging info.
 
-        raw_data_shape (tuple): Shape of input satellite data as (rows, cols).
-
         preproc_transfer_data (bool): Whether to preprocess observational data
         (default True).
 
@@ -103,7 +101,6 @@ class IceNetDataPreProcessor(object):
         self.n_linear_years = n_linear_years
         self.minmax = minmax
         self.verbose_level = verbose_level
-        self.raw_data_shape = raw_data_shape
         self.preproc_obs_data = preproc_obs_data
         self.preproc_transfer_data = preproc_transfer_data
         self.cmip_transfer_data = cmip_transfer_data
@@ -625,7 +622,7 @@ class IceNetDataPreProcessor(object):
                             print("Setting up the land map: ", end='', flush=True)
 
                         land_mask = np.load(os.path.join(config.mask_data_folder, config.land_mask_filename))
-                        land_map = np.ones(self.raw_data_shape, np.float32)
+                        land_map = np.ones(self.config['raw_data_shape'], np.float32)
                         land_map[~land_mask] = -1.
 
                         np.save(os.path.join(self.paths['meta'], 'land.npy'), land_map)

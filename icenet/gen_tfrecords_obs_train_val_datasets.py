@@ -13,6 +13,12 @@ import tensorflow as tf
 
 '''
 Author: James Byrne (BAS). Modified by Tom Andersson.
+
+Using a given dataloader_ID, loads the NumPy arrays in
+./trained_networks/<dataloader_ID>/obs_train_val_data/numpy/ generated from
+./icenet/gen_numpy_obs_train_val_data.py and converts them to TfRecords datasets
+for faster training with TensorFlow. Saves the results in
+./trained_networks/<dataloader_ID>/obs_train_val_data/tfrecords/.
 '''
 
 #### User input
@@ -25,6 +31,7 @@ dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
 
 dataloader_ID_folder = os.path.join(config.networks_folder, dataloader_ID, 'obs_train_val_data')
 
+#### Functions
 ####################################################################
 
 
@@ -58,7 +65,6 @@ def convert_batch(tf_path, data):
             writer.write(record_data)
 
 
-# TODO: Generic globbing of input data?
 def convert_data(x_data, y_data, sample_weight_data, output_dir,
                  workers=4, batch_size=1, wildcard="*"):
     x_data = np.load(x_data)
@@ -88,12 +94,13 @@ def convert_data(x_data, y_data, sample_weight_data, output_dir,
             executor.submit(convert_batch, *args)
 
 
+#### Main script
+####################################################################
 if __name__ == "__main__":
     args = get_args()
     log_state = logging.DEBUG if args.verbose else logging.INFO
     logging.getLogger().setLevel(log_state)
 
-    # TODO: Would be more generic to just pick up a train/test/val named file
     for data in [('X_train', 'y_train', 'sample_weight_train'),
                  ('X_val', 'y_val', 'sample_weight_val')]:
         x_data = os.path.join(dataloader_ID_folder, 'numpy', "{}.npy".format(data[0]))

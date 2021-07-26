@@ -4,12 +4,37 @@ sys.path.insert(0, os.path.join(os.getcwd(), 'icenet'))  # if using jupyter kern
 from utils import IceNetDataPreProcessor
 
 '''
-Use the IceNetDataPreProcessor class to normalise and save data in NumPy format
-for training IceNet. This can take a minute or so to run.
+Use the IceNetDataPreProcessor class to normalise and save climate variables in
+NumPy format for training IceNet.
+
+Raw data is loaded from the ./data/obs/ and ./data/cmip6/ folders and the
+processed data is saved in ./data/network_datasets/<dataset_name>/.
+
+Normalisation parameters computed over the observational training data are
+stored in a JSON file at ./data/network_datasets/<dataset_name>/norm_params.json
+so that they are only computed once. Similarly, monthly climatology fields
+used for computing anomaly fields are saved next to the raw NetCDF files so that
+climatologies are only computed once for each variable.
+
+Note that producing the SIC linear trend forecast fields over all the climate
+simulations can take on the order of an hour to compute.
 '''
 
+# Path to the dataloader configuration JSON file
 dataloader_config_fpath = 'dataloader_configs/2021_06_15_1854_icenet_nature_communications.json'
 
+preproc_obs_data = False
+
+# If True, normalisation parameters must have been computed for each variable
+#   by running this with `preproc_obs_data` equal to True
+preproc_transfer_data = True
+
+# False: Normalise data to have mean=0 and standard deviation=1 or min=-1 and max=+1.
+# True: Normalise data to have min=-1 and max=+1.
+minmax = False
+
+# If 'anom' is True, compute and process anomaly from the climatology over
+#   the training years. If 'abs' is True, process the absolute data.
 preproc_vars = {
     'siconca': {'anom': False, 'abs': True, 'linear_trend': True},
     'tas': {'anom': True, 'abs': False},
@@ -29,17 +54,7 @@ preproc_vars = {
 
 n_linear_years = 35  # Number of past years to used in the linear trend projections
 
-minmax = False
-
 verbose_level = 2
-
-raw_data_shape = (432, 432)
-
-preproc_obs_data = False
-
-# If True, normalisation parameters must have been computed for each variable
-#   by running this with `preproc_obs_data` equal to True
-preproc_transfer_data = True
 
 cmip_transfer_data = {
     'EC-Earth3': (
@@ -64,7 +79,7 @@ dpp = IceNetDataPreProcessor(
     n_linear_years=n_linear_years,
     minmax=minmax,
     verbose_level=verbose_level,
-    raw_data_shape=raw_data_shape,
     preproc_obs_data=preproc_obs_data,
     preproc_transfer_data=preproc_transfer_data,
-    cmip_transfer_data=cmip_transfer_data)
+    cmip_transfer_data=cmip_transfer_data
+)
