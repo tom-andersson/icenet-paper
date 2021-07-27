@@ -14,19 +14,41 @@ import pandas as pd
 from time import time
 
 '''
-Author: Tom Andersson, with dask help from James Byrne (BAS).
+Loads forecast and ground truth NetCDFs with xarray, analyses forecast
+performance with dask & distributed, and writes the results to a CSV file using
+pandas. The forecast results CSV is saved to `results/forecast_results/` with
+filename format `<timestamp>_forecast_results.csv` to avoid overwriting previous
+results.
 
-Script to... analyse forecast performance using xarray and write
-to a CSV file using pandas
+The spatially-averaged metrics are computed in a parallel & distributed fashion
+using dask to significantly speed up computation and reduce memory load. This
+works by lazily loading the forecast data, building a computation graph, and
+iteratively solving the task graph using multiple workers. Optionally turn
+off processing with dask and perform the computations in memory by changing the
+bools in the user input section.
+
+The xr.DataArray.weighted method is used to compute metrics only over the active
+grid cell region.
+
+Optionally pre-load the most recent results CSV file to append new models or
+metrics to an existing results dataset. This allows you to include newer
+versions of IceNet to compare with the benchmarks and previous IceNet versions
+without having to re-analyse all the other models.
+
+The indexes of the `results_df` pd.DataFrame are: ['Model', 'Ensemble member',
+'Leadtime', 'Forecast date'].
+
+A dictionary mapping models to lists of metrics to compute (`compute_dict`) is
+determined based on the lists of models and metrics in the user input section.
+If pre-loading a results CSV, only new models and new metrics not already in the
+DataFrame are added to `compute_dict`.
 
 For IceNet, each ensemble member is analysed, as well as the ensemble mean.
+This allows the performance of individual ensemble members to be assessed, as
+well as the improvement in performance due to ensemble-averaging. For the linear
+trend and ensemble-mean SEAS5 model, the 'Ensemble member' entry is filled as 'NA'.
 
-Optionally dask local distributed cluster to efficiently process forecasts in parallel...
-
-You can create a new results dataset or append new metrics and models to an existing
-one.
-
-The file format prepends the current time to avoid overwriting previous results.
+Authors: Tom Andersson, with dask help from James Byrne (BAS).
 '''
 
 n_workers = 8
@@ -37,6 +59,9 @@ dask.config.set(temporary_directory=os.path.expandvars(temp_dir))
 ####################################################################
 
 if __name__ == "__main__":
+
+    ### User input
+    ####################################################################
 
     compute_in_memory = False
     compute_with_dask = True
@@ -69,7 +94,8 @@ if __name__ == "__main__":
     print('\n# of forecast months: {}\n'.format(n_forecast_months))
     leadtimes = np.arange(1, n_forecast_months+1)
 
-    # Load IceNet forecasts
+    # Load IceNet forecasts (this is done now to obtain `icenet_seeds`, used
+    #   for results_df
     if icenet_ID in model_compute_list:
 
         heldout_forecast_fpath = os.path.join(
@@ -81,7 +107,7 @@ if __name__ == "__main__":
         icenet_forecast_da = xr.open_dataarray(heldout_forecast_fpath, chunks=chunks)
         icenet_seeds = icenet_forecast_da.seed.values
 
-    ### Monthly masks
+    ### Monthly masks (active grid cell regions to compute metrics over)
     ####################################################################
 
     mask_fpath_format = os.path.join(config.mask_data_folder, config.active_grid_cell_file_format)
@@ -97,8 +123,11 @@ if __name__ == "__main__":
     def create_results_dataset_index(model_compute_list):
 
         '''
-        Returns a pandas.MultiIndex object of results dataset indexes for a given
-        list of models to compute metrics for.
+        Returns a pandas.MultiIndex object of results dataset indexes for a
+        given list of models to compute metrics for. For IceNet, the 'Ensemble
+        member' column delineates the performance of each IceNet ensemble
+        member (identified by the integer random seed value it was trained
+        with) and the ensemble mean models ('ensemble' or 'ensemble_tempscaled').
         '''
 
         multi_index = pd.MultiIndex.from_product(
@@ -187,7 +216,7 @@ if __name__ == "__main__":
             model: metric_compute_list for model in model_compute_list
         }
 
-    print('COMPUTATIONS:')
+    print('Computations to perform:')
     pprint.pprint(compute_dict)
     print('\n\n')
 
@@ -289,7 +318,6 @@ if __name__ == "__main__":
                 # Mean percentage of correct classifications over the active
                 #   grid cell area
                 ds_binacc = (binary_correct_weighted_da.mean(dim=['yc', 'xc']) * 100)
-                # Compute_ds[metric] = next(iter(ds_binacc.data_vars.values()))
                 compute_ds[metric] = ds_binacc
 
             elif metric == 'SIE error':

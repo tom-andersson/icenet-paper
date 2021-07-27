@@ -18,7 +18,7 @@ downloaded. To obtain manageable download sizes, a single monthly forecast lead
 time is downloaded at a time (controlled by the --leadtime command line input).
 
 This script requires you to have created and ECMWF account and emailed the
-Computing Representative to upgrate your account to access ECMWF MARS Catalog
+Computing Representative to upgrade your account to access ECMWF MARS Catalogue
 data. See the README.
 
 The download_seas5_forecasts_in_parallel.sh bash script runs this script in

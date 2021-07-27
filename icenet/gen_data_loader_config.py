@@ -13,7 +13,7 @@ input data, number of forecast months, and loss function sample weighting.
 
 A timestamp is prepended to the 'dataloader_name' entry to define a unique
 `dataloader_ID` for the configuration settings generated. The JSON file is saved
-in the format ./dataloader_configs/<dataloader_ID>.json. The `dataloader_ID` is
+in the format dataloader_configs/<dataloader_ID>.json. The `dataloader_ID` is
 then used in downstream scripts to specify individual dataloader configurations.
 It is also used to generate a unique `icenet_ID` for a particular
 data/architecture combination: icenet_ID = dataloader_ID + architecture_ID (here
@@ -27,7 +27,7 @@ dataloader_name (str): Name for these data loader configuration settings, used a
 the filename for the config .json file.
 
 dataset_name (str): Name of the network dataset (generated with
-./icenet/preproc_icenet_data.py) to load data from.
+icenet/preproc_icenet_data.py) to load data from.
 
 input_data (dict): Data structure dictating which variables to include for
 IceNet's input data and, if appropriate, a maximum lag (in months) to grab the

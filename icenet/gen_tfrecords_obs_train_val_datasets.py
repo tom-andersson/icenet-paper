@@ -15,10 +15,10 @@ import tensorflow as tf
 Author: James Byrne (BAS). Modified by Tom Andersson.
 
 Using a given dataloader_ID, loads the NumPy arrays in
-./trained_networks/<dataloader_ID>/obs_train_val_data/numpy/ generated from
-./icenet/gen_numpy_obs_train_val_data.py and converts them to TfRecords datasets
+trained_networks/<dataloader_ID>/obs_train_val_data/numpy/ generated from
+icenet/gen_numpy_obs_train_val_data.py and converts them to TfRecords datasets
 for faster training with TensorFlow. Saves the results in
-./trained_networks/<dataloader_ID>/obs_train_val_data/tfrecords/.
+trained_networks/<dataloader_ID>/obs_train_val_data/tfrecords/.
 '''
 
 #### User input

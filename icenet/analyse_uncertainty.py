@@ -10,7 +10,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 '''
-Docstring TODO
+Assesses the calibration of IceNet and SEAS5, determines IceNet's 'ice edge region',
+and assesses IceNet's ice edge bounding ability. Results are saved to
+`results/uncertainty_results/`
+
+Ensemble-mean SIP forecasts are loaded for SEAS5 and IceNet, and the maps are
+converted to vectors of grid cell-wise SIP predictions, stored in a
+`pd.DataFrame` (`uncertainty_df`), alongside boolean columns for whether the
+model made a binary error and whether the ice edge was located at that grid
+cell.
+
+`uncertainty_df` is used for producing probability calibration plots,
+computing the p'_90% value for the ice edge region over the validation years,
+and determining the fraction of observed ice edge bounded by IceNet's ice
+edge region over the test years.
 '''
 
 ### User input
@@ -315,9 +328,9 @@ print('Done.\n')
 
 print("Saving datasets... ", end='', flush=True)
 
-ice_edge_region_df.to_csv(ice_edge_region_df_fpath)
 uncertainty_df.to_csv(uncertainty_df_fpath)
 sip_bounding_df.to_csv(sip_bounding_df_fpath)
+ice_edge_region_df.to_csv(ice_edge_region_df_fpath)
 np.save(sip_prime_90_fpath, sip_prime_90)
 
 print('Done.\n')

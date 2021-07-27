@@ -11,13 +11,30 @@ from models import linear_trend_forecast
 from utils import IceNetDataLoader
 from tensorflow.keras.models import load_model
 
+'''
+Produces SIP forecasts from IceNet and SIC forecasts from the linear trend
+model. Stores the forecasts in xarray.DataArrays and saves them as NetCDF files
+in data/forecasts/<model>/ folders.
+
+The dimensions of the IceNet forecasts are `(time, yc, xc, leadtime, seed,
+ice_class)`, where the 'seed' dimension specifies the ensemble member
+(identified by the integer random seed value it was trained with) or the
+ensemble mean model ('ensemble').
+
+For IceNet, the ensemble-mean SIP forecast is also saved as a separate, smaller
+file.
+
+Logic for producing forecasts from other Python-based models could be added to this
+script with relative ease.
+'''
+
 ####################################################################
 
+# List of models to produce forecasts for
 models = ['IceNet', 'Linear trend']
-models = ['IceNet']
 
+# Specifications for the IceNet model to produce forecasts for
 dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
-# dataloader_ID = '2021_06_30_0954_icenet_pretrain_ablation'
 architecture_ID = 'unet_tempscale'
 tempscaling_used = True  # Whether to load networks with temperature scaling
 
@@ -157,6 +174,7 @@ for model in models:
     start_date = all_start_dates[0]
     for start_date in tqdm(all_start_dates):
 
+        # Target forecast dates for the forecast beginning at this `start_date`
         target_dates = pd.date_range(
             start=start_date,
             end=start_date + pd.DateOffset(months=n_forecast_months-1),

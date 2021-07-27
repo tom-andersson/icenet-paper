@@ -12,6 +12,10 @@ import numpy as np
 Script to compute SEAS5 bias correction fields; bias correct the ensemble-mean
 sea ice concentration (SIC) forecasts and the sea ice probability (SIP) forecasts;
 and save in the SEAS5 forecast folder.
+
+The bias-corrected forecasts are saved as NetCDFs in `data/forecasts/seas5/`
+with filenames `seas5_forecasts.nc` and `seas5_sip_forecasts.nc` with
+dimensions `(time, yc, xc, leadtime)`.
 '''
 
 biascorrection_dates = pd.date_range(
@@ -25,10 +29,6 @@ biascorrection_dates = pd.date_range(
 
 seas5_folder = os.path.join(config.forecast_data_folder, 'seas5')
 seas5_EASE_folder = os.path.join(seas5_folder, 'EASE')
-seas5_biascorrected_folder = os.path.join(seas5_folder, 'biascorrected')
-
-if not os.path.exists(seas5_biascorrected_folder):
-    os.makedirs(seas5_biascorrected_folder)
 
 leadtimes = np.arange(1, 7)
 

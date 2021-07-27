@@ -3,9 +3,17 @@ import sys
 import tensorflow as tf
 sys.path.insert(0, os.path.join(os.getcwd(), 'icenet'))  # if using jupyter kernel
 
+'''
+TensorFlow metrics.
+'''
+
 
 class ConstructLeadtimeAccuracy(tf.keras.metrics.CategoricalAccuracy):
-    ''' Docstring TODO '''
+
+    ''' Computes the network's accuracy over the active grid cell region
+    for either a) a specific lead time in months, or b) over all lead times
+    at once. '''
+
     def __init__(self,
                  name='construct_custom_categorical_accuracy',
                  use_all_forecast_months=True,
@@ -48,32 +56,3 @@ class ConstructLeadtimeAccuracy(tf.keras.metrics.CategoricalAccuracy):
     def from_config(cls, config):
         ''' For saving and loading networks with this custom metric. '''
         return cls(**config)
-
-
-class ConstructMeanAccuracy(tf.keras.metrics.Mean):
-    ''' Docstring TODO '''
-    def __init__(self,
-                 name='construct_custom_categorical_accuracy',
-                 leadtime_metrics=[],
-                 **kwargs):
-        super(ConstructMeanAccuracy, self).__init__(name=name, **kwargs)
-
-        self._leadtime_metrics = leadtime_metrics
-
-    def update_state(self, y_true, y_pred, sample_weight=None):
-        tf.print('\n')
-        tf.print(tf.math.reduce_mean([m.result() for m in self._leadtime_metrics]))
-        tf.print('\n')
-
-        # TEMP no streaming
-        # self.reset_states()
-
-        super().update_state([m.result() for m in self._leadtime_metrics])
-
-
-# def ConstructMeanAccuracy(leadtime_metrics):
-#
-#     def mean_accuracy(y_true, y_pred, sample_weight=None):
-#         return tf.math.reduce_mean([m.result() for m in leadtime_metrics])
-#
-#     return mean_accuracy

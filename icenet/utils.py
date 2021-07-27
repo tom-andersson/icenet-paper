@@ -28,15 +28,21 @@ from tqdm import tqdm
 
 class IceNetDataPreProcessor(object):
     """
-    Normalises IceNet input data and saves the normlaised monthly averages
+    Normalises IceNet input data and saves the normalised monthly averages
     as .npy files. If preprocessing climate model data for transfer learning,
     the observational normalisation is repeated for the climate model data in order
     to preserve the mapping from raw values to normalised values.
 
     Data is stored in the following form with observations separated from climate
     model transfer learning data:
-     - data/network_datasets/dataset_name/obs/tas/2006_04.npy
-     - data/network_datasets/dataset_name/transfer/MRI-ESM2-0/r1i1p1f1/tas/2056_09.npy
+     - data/network_datasets/<dataset_name>/obs/tas/2006_04.npy
+     - data/network_datasets/<dataset_name>/transfer/MRI-ESM2-0/r1i1p1f1/tas/2056_09.npy
+
+    Normalisation parameters computed over the observational training data are
+    stored in a JSON file at data/network_datasets/<dataset_name>/norm_params.json
+    so that they are only computed once. Similarly, monthly climatology fields
+    used for computing anomaly fields are saved next to the raw NetCDF files so that
+    climatologies are only computed once for each variable.
     """
 
     def __init__(self, dataloader_config_fpath, preproc_vars,
@@ -49,7 +55,7 @@ class IceNetDataPreProcessor(object):
         dataloader_config_fpath (str): Path to the data loader configuration
             settings JSON file, defining IceNet's input-output data configuration.
             This also defines the dataset name, used as the folder name to
-            store the preprocessed data within network_datasets/.
+            store the preprocessed data within data/network_datasets/.
 
         preproc_vars (dict): Which variables to preprocess. Example:
 
@@ -73,18 +79,19 @@ class IceNetDataPreProcessor(object):
         n_linear_years (int): Number of past years to used in the linear trend
         projections.
 
-        minmax (bool): Whether to use min-max normalisation to (-1, 1)
+        minmax (bool): Whether to use min-max normalisation to (-1, 1) or normalise
+        the mean and standard deviation to 0 and 1.
 
         verbose_level (int): Controls how much to print. 0: Print nothing.
         1: Print key set-up stages. 2: Print debugging info.
 
-        preproc_transfer_data (bool): Whether to preprocess observational data
+        preproc_obs_data (bool): Whether to preprocess observational data
         (default True).
 
         preproc_transfer_data (bool): Whether to also preprocess CMIP6 data for each variable
         (default False).
 
-        cmip_transfer_data (str): Which CMIP6 models & ensemble member IDs to
+        cmip_transfer_data (dict): Which CMIP6 models & model runs to
         preprocess for transfer learning. Example:
 
                 cmip_transfer_data = {
@@ -242,12 +249,6 @@ class IceNetDataPreProcessor(object):
     @staticmethod
     def mean_and_std(list, verbose_level=2):
 
-        """
-        Return the mean and standard deviation of an array-like object (intended
-        use case is for normalising a raw satellite data array based on a list
-        of samples used for training).
-        """
-
         # Must use float64s to be JSON serialisable
         mean = np.nanmean(list, dtype=np.float64)
         std = np.nanstd(list, dtype=np.float64)
@@ -364,7 +365,7 @@ class IceNetDataPreProcessor(object):
         forecasts for.
 
         `dataset` (str): 'obs' or 'cmip6' (dictates whether to skip missing
-        obwservational months in the linear trend extrapolation)
+        observational months in the linear trend extrapolation)
 
         Returns:
         `linear_trend_da` (xarray.DataArray): DataArray whose time slices
@@ -399,7 +400,7 @@ class IceNetDataPreProcessor(object):
             # No normalisation for SIC
             return True
 
-        # Grab existing paramaters if stored in norm_params JSON file
+        # Grab existing parameters if stored in norm_params JSON file
         precomputed_params_exists = False
         if varname in self.norm_params.keys():
             if data_format in self.norm_params[varname].keys():
@@ -650,12 +651,12 @@ class IceNetDataPreProcessor(object):
 
 class IceNetDataLoader(tf.keras.utils.Sequence):
     """
-    Generates batches of input-output tensors for training IceNet. Inherits from
-    keras.utils.Sequence which ensures each the network trains once on each
-    sample per epoch. Must implement a __len__ method that returns the
-    number of batches and a __getitem__ method that returns a batch of data. The
-    on_epoch_end method is called after each epoch.
-
+    Custom data loader class for generating batches of input-output tensors for
+    training IceNet. Inherits from  keras.utils.Sequence, which ensures each the
+    network trains once on each  sample per epoch. Must implement a __len__
+    method that returns the  number of batches and a __getitem__ method that
+    returns a batch of data. The  on_epoch_end method is called after each
+    epoch.
     See: https://www.tensorflow.org/api_docs/python/tf/keras/utils/Sequence
 
     """
@@ -664,11 +665,11 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
 
         '''
         Params:
-            dataloader_config_fpath (str): Path to the data loader configuration
-                settings JSON file, defining IceNet's input-output data configuration.
+        dataloader_config_fpath (str): Path to the data loader configuration
+            settings JSON file, defining IceNet's input-output data configuration.
 
-            seed (int): Random seed used for shuffling the training samples before
-                each epoch.
+        seed (int): Random seed used for shuffling the training samples before
+            each epoch.
         '''
 
         with open(dataloader_config_fpath, 'r') as readfile:
@@ -941,7 +942,7 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
 
     def load_polarholes(self):
         """
-        This method loads the polar holes.
+        Loads each of the polar holes.
         """
 
         if self.config['verbose_level'] >= 1:
@@ -1007,7 +1008,7 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
         True on active cells and False on inactive cells). The cells with 'True'
         are where predictions are to be made with IceNet. The active grid cell
         mask for a particular month is determined by the sum of the land cells,
-        the ocean cells (for that month), and the missng polar hole.
+        the ocean cells (for that month), and the missing polar hole.
 
         The mask is used for removing 'inactive' cells (such as land or polar
         hole cells) from the loss function in self.data_generation.
@@ -1044,7 +1045,7 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
     def turn_off_transfer_learning(self):
 
         '''
-        Converts the data loader back to using ERA5/NSIDC observational
+        Converts the data loader back to using ERA5/OSI-SAF observational
         training data.
         '''
 
@@ -1056,8 +1057,8 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
     def convert_to_validation_data_loader(self):
 
         """
-        This method resets the `all_forecast_start_dates` array to correspond to the
-        validation months defined by `self.obs_val_dates`.
+        Resets the `all_forecast_IDs` array to correspond to the validation
+        months defined by the data loader configuration file.
         """
 
         self.set_obs_forecast_IDs(dataset='val')
@@ -1067,7 +1068,7 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
     def convert_to_test_data_loader(self):
 
         """
-        As above but for the testing months defined by `self.obs_test_dates`
+        As above but for the testing months.
         """
 
         self.set_obs_forecast_IDs(dataset='test')
@@ -1080,7 +1081,7 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
 
         Parameters:
         forecast_IDs (list):
-            If self.do_transfer_learning is True, a list of pd.Timestamp objects
+            If self.do_transfer_learning is False, a list of pd.Timestamp objects
             corresponding to the forecast initialisation dates (first month
             being forecast) for the batch of X-y data to load.
 
@@ -1088,11 +1089,13 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
             of the form (cmip6_model_name, member_id, forecast_start_date).
 
         Returns:
-        X (ndarray): Set of input 3D volumes.
+        X (ndarray): Batch of input 3D volumes.
 
-        y (ndarray): Set of ground truth output SIC maps with loss function pixel
-        weighting as first channel.
+        y (ndarray): Batch of ground truth output SIC class maps
 
+        sample_weight (ndarray): Batch of pixelwise weights for weighting the
+            loss function (masking outside the active grid cell region and
+            up-weighting summer months).
         """
 
         # Allow non-list input for single forecasts
@@ -1158,9 +1161,6 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
             batch_sic_list.append(np.stack(sample_sic_list, axis=2))
 
         batch_sic = np.stack(batch_sic_list, axis=0)
-
-        # Move month index from axis 1 to axis 3
-        # batch_sic = np.moveaxis(batch_sic, source=1, destination=3)
 
         no_ice_gridcells = batch_sic <= 0.15
         ice_gridcells = batch_sic >= 0.80
@@ -1323,16 +1323,22 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
 ################################################################################
 
 
-def computeSIE(sic_vector):
-    ''' Compute the sea ice extent (SIE), defined as the total area of grid cells
-    whose SIC value exceeds 15%. For the EASE grid we use, each grid cell is
-    25x25 km. SIE units: km^2. '''
-
-    SIE = sic_vector[sic_vector >= 15].shape[0] * (25**2)
-    return SIE
-
-
 def make_varname_verbose(varname, leadtime, fc_month_idx):
+
+    '''
+    Takes IceNet short variable name (e.g. siconca_abs_3) and converts it to a
+    long name for a given forecast calendar month and lead time (e.g.
+    'Feb SIC').
+
+    Inputs:
+    varname: Short variable name.
+    leadtime: Lead time of the forecast.
+    fc_month_index: Mod-12 calendar month index for the month being forecast
+        (e.g. 8 for September)
+
+    Returns:
+    verbose_varname: Long variable name.
+    '''
 
     month_names = np.array(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'])
 
@@ -1399,6 +1405,9 @@ def make_varname_verbose(varname, leadtime, fc_month_idx):
 
 def make_varname_verbose_any_leadtime(varname):
 
+    ''' As above, but agnostic to what the target month or lead time is. E.g.
+    "SIC (1)" for sea ice concentration at a lag of 1 month. '''
+
     varname_regex = re.compile('^(.*)_(abs|anom|linear_trend)_([0-9]+)$')
 
     var_lookup_table = {
@@ -1443,16 +1452,6 @@ def make_varname_verbose_any_leadtime(varname):
         return verbose_varname
 
 
-class nf(float):
-    """
-    A class that forces representation of float to look a certain way
-    This remove trailing zero so '1.0' becomes '1'.
-    """
-    def __repr__(self):
-        s = f'{self:.1f}'
-        return f'{self:.0f}' if s[-1] == '0' else s
-
-
 ################################################################################
 ################## FUNCTIONS
 ################################################################################
@@ -1469,8 +1468,13 @@ def assignLatLonCoordSystem(cube):
 
 def fix_near_real_time_era5_func(latlon_path):
 
+    '''
+    Near-real-time ERA5 data is classed as a different dataset called 'ERA5T'.
+    This results in a spurious 'expver' dimension. This method detects
+    whether that dim is present and removes it, concatenating into one array
+    '''
+
     ds = xr.open_dataarray(latlon_path)
-    ds
 
     if len(ds.data.shape) == 4:
         print('Fixing spurious ERA5 "expver dimension for {}.'.format(latlon_path))
@@ -1739,7 +1743,7 @@ def save_cmip6(cmip6_ease, fpath, compress=True, verbose=False):
 def compute_heatmap(results_df, model, seed='NA', metric='Binary accuracy'):
     '''
     Returns a binary accuracy heatmap of lead time vs. calendar month
-    for a given model. Uses the results_df from the global scope.
+    for a given model.
     '''
 
     month_names = np.array(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -1757,6 +1761,13 @@ def compute_heatmap(results_df, model, seed='NA', metric='Binary accuracy'):
 
 
 def arr_to_ice_edge_arr(arr, thresh, land_mask, region_mask):
+
+    '''
+    Compute a boolean mask with True over ice edge contour grid cells using
+    matplotlib.pyplot.contour and an input threshold to define the ice edge
+    (e.g. 0.15 for the 15% SIC ice edge or 0.5 for SIP forecasts). The contour
+    along the coastline is removed using the region mask.
+    '''
 
     X, Y = np.meshgrid(np.arange(arr.shape[0]), np.arange(arr.shape[1]))
     X = X.T

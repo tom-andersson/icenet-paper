@@ -11,6 +11,11 @@ from tensorflow.keras.layers import Conv2D, BatchNormalization, UpSampling2D, \
     concatenate, MaxPooling2D, Input
 from tensorflow.keras.optimizers import Adam
 
+'''
+Defines the Python-based sea ice forecasting models, such as the IceNet architecture
+and the linear trend extrapolation model.
+'''
+
 ### Custom layers:
 # --------------------------------------------------------------------
 

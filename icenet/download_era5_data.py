@@ -33,7 +33,7 @@ The `variables` dict maps from CMIP6 variable names to the CDS naming scheme.
 See download_era5_data_in_parallel.sh to download and regrid multiple
 variables in parallel using this script.
 
-Files are saved to ./data/obs/ in <var>_EASE.nc format.
+Files are saved to data/obs/ in <var>_EASE.nc format.
 
 You need to have set up your ~/.cdsapirc file before running this - see the
 README.

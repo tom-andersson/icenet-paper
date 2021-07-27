@@ -7,9 +7,9 @@ from utils import IceNetDataLoader
 
 '''
 Using a given dataloader_ID, loads monthly .npy files from
-./data/network_datasets/<dataset_name>/ and stores the entire training/validation
+data/network_datasets/<dataset_name>/ and stores the entire training/validation
 input-output datasets as large NumPy arrays. The results are saved to
-./trained_networks/<dataloader_ID>/obs_train_val_data/numpy/.
+trained_networks/<dataloader_ID>/obs_train_val_data/numpy/.
 
 '''
 

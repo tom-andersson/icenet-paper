@@ -29,7 +29,7 @@ utils.esgf_search to find download links for the variable. The script loops
 through each variable, downloading those for which 'include' is True in the
 variable dictionary.
 
-Variable files are saved to ./cmip6/<source_id>/<member_id>/ in <var>_EASE_cmpr.nc
+Variable files are saved to cmip6/<source_id>/<member_id>/ in <var>_EASE_cmpr.nc
 format.
 
 See download_cmip6_data_in_parallel.sh to download and regrid multiple climate

@@ -7,11 +7,11 @@ from utils import IceNetDataPreProcessor
 Use the IceNetDataPreProcessor class to normalise and save climate variables in
 NumPy format for training IceNet.
 
-Raw data is loaded from the ./data/obs/ and ./data/cmip6/ folders and the
-processed data is saved in ./data/network_datasets/<dataset_name>/.
+Raw data is loaded from the data/obs/ and data/cmip6/ folders and the
+processed data is saved in data/network_datasets/<dataset_name>/.
 
 Normalisation parameters computed over the observational training data are
-stored in a JSON file at ./data/network_datasets/<dataset_name>/norm_params.json
+stored in a JSON file at data/network_datasets/<dataset_name>/norm_params.json
 so that they are only computed once. Similarly, monthly climatology fields
 used for computing anomaly fields are saved next to the raw NetCDF files so that
 climatologies are only computed once for each variable.

@@ -11,10 +11,23 @@ from utils import IceNetDataLoader
 import tensorflow as tf
 
 '''
-Docstring TODO
+Computes ensemble-mean temperature scaling parameters for each lead time of
+the ensemble-mean IceNet model, using the validation period from 2012-2017.
 
-This assumed you've generated the X_val.npy & y_val.npy observational data using
-the gen_numpy_obs_train_val_datasets.py script.
+Loads the raw IceNet ensemble-mean forecasts using the 'ensemble' coordinate of
+the 'seed' dimension in `data/forecasts/icenet/<dataloader_ID>/<architecture_ID>/icenet_forecasts.nc`
+and uses scipy.optimize.minimize_scalar to obtain the T-value that minimises
+the categorical crossentropy at each lead time.
+
+The array of `N` T-values are saved to:
+`icenet/trained_networks/<dataloader_ID>/<architecture_ID>/T_ens_opts.npy`
+
+The temperature scaled forecasts are stored in a new 'ensemble_tempscaled'
+coordinate of the original `icenet_forecasts.nc` dataset.
+
+The ensemble-mean temperature-scaled sea ice probability (SIP) forecasts
+are saved to:
+`data/forecasts/icenet/<dataloader_ID>/<architecture_ID>/icenet_sip_forecasts_tempscaled.nc`
 '''
 
 #### User input
@@ -55,7 +68,7 @@ icenet_forecast_da = icenet_forecast_da.sel(time=slice(val_start, val_end))
 
 dataloader = IceNetDataLoader(dataloader_config_fpath)
 
-# Sample weights
+# Sample weights over the validation dataset
 sample_weights = []
 for date in pd.date_range(val_start, val_end, freq='MS'):
     _, _, sample_weight = dataloader.data_generation(date)

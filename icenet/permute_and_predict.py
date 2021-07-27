@@ -15,10 +15,61 @@ from tensorflow.keras.models import load_model
 np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
 pd.options.display.float_format = '{:.2f}'.format
 
+'''
+Runs the permute-and-predict algorithm for IceNet and saves results to
+`results/permute_and_predict_results/permute_and_predict_results.csv`.
+
+First, the desired subset of IceNet ensemble members are loaded, the
+of unpermuted IceNet input tensor and ground truth outputs are generated from
+the data loader, and IceNet's forecasts with unpermuted inputs are generated.
+
+Next, the baseline accuracy for each target date and lead time is computed
+by comparing xr.DataArrays of the forecasts with ground truth. Using xarray
+results in a `ds_acc_unpermuted` xr.Dataset whose accuracy can conveniently be
+queried at any target date and lead time.
+
+Then, the permute-and-predict algorithm is run with an outer loop over random
+permutation seeds and an inner loop over IceNet's input variables. The
+input tensor is permuted over the time index for each variable, IceNet's forecasts
+are regenerated, and the accuracy drop relative to the baseline is computed
+and stored in a DataFrame with indexes (Seed, Leadtime, Forecast date, Variable).
+The results are checkpointed after each outer seed loop iteration.
+'''
+
+################################################################################
+#################### User input section
+################################################################################
+
+dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
+architecture_ID = 'unet_tempscale'
+
+# Number of times to run the PaP method with different permutations (for averaging)
+n_runs = 10
+
+# Number of samples per batch for running IceNet predictions over the validation set
+#   (reduce for smaller GPU memory)
+batch_size = 8
+
+# Which ensemble network seeds to use for the saliency analysis. 'all' or a list
+#   of integers.
+ensemble_seeds = [38, 42, 43, 44, 46]
+
+temp_scaling_used = True  # Whether or not the network being loaded used temperature scaling
+
+# Note: 2020 data wasn't used at the time of this experiment, but is used
+#   in the rest of the paper
+heldout_start = '2012-01-01'
+heldout_end = '2019-12-01'
+
+
+################################################################################
+#################### Functions
+################################################################################
+
 
 def run_icenet_on_numpy(input_arr, ensemble, batch_size=8):
     '''
-    Computes a numpy array of IceNet ensemble-mean class forecasts using an
+    Computes a numpy array of IceNet ensemble-mean ice class forecasts using an
     numpy array of input tensors.
 
     Inputs:
@@ -28,7 +79,7 @@ def run_icenet_on_numpy(input_arr, ensemble, batch_size=8):
 
     Returns:
     all_icenet_preds (np.ndarray): Shape (n_forecast_start_dates, n_x, n_y,
-    n_classes, n_leadtimes)
+    n_classes, n_leadtimes) of ice class index prediciont (0, 1, or 2).
     '''
 
     num_batches = int(np.ceil(input_arr.shape[0] / batch_size))
@@ -53,6 +104,23 @@ def run_icenet_on_numpy(input_arr, ensemble, batch_size=8):
 
 
 def numpy_to_xarray(arr, init_dates, target_dates, n_forecast_months):
+
+    '''
+    Converts input NumPy array to an xarray.DataArray with dimensions
+    (time, y, x, leadtime). `arr` can either be: a) IceNet forecast ice class
+    index predictions (0, 1, or 2), or b) set of ground truth SIC values from
+    the data loader.
+
+    Inputs:
+
+    arr: Input NumPy array to convert to xr.DataArray.
+    init_dates: List of forecast initialisation dates of `arr`.
+    target_dates: List of desired target dates to store in the DataArray.
+    n_forecast_months: Maximum lead time of the forecasts.
+
+    Returns:
+    ds: xr.DataArray of IceNet forecasts with dimensions (time, y, x, leadtime).
+    '''
 
     leadtimes = np.arange(1, n_forecast_months + 1)
 
@@ -89,31 +157,6 @@ def numpy_to_xarray(arr, init_dates, target_dates, n_forecast_months):
 
     return ds
 
-
-################################################################################
-#################### User input section
-################################################################################
-
-dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
-architecture_ID = 'unet_tempscale'
-
-# Number of times to run the PaP method with different permutations (for averaging)
-n_runs = 10
-
-# Number of samples per batch for running IceNet predictions over the validation set
-#   (reduce for smaller GPU memory)
-batch_size = 8
-
-# Which ensemble network seeds to use for the saliency analysis. 'all' or a list
-#   of integers.
-saliency_ensemble_seeds = [38, 42, 43, 44, 46]
-
-temp_scaling_used = True  # Whether or not the network being loaded used temperature scaling
-
-# Note: 2020 data wasn't used at the time of this experiment, but is used
-#   in the rest of the paper
-heldout_start = '2012-01-01'
-heldout_end = '2019-12-01'
 
 ################################################################################
 #################### Set up folder structure
@@ -200,14 +243,14 @@ num_ensemble_networks = len(ensemble_seeds)
 
 ensemble = []
 for path, network_seed in zip(network_paths, ensemble_seeds):
-    if saliency_ensemble_seeds != 'all':
-        if not np.isin(network_seed, saliency_ensemble_seeds):
+    if ensemble_seeds != 'all':
+        if not np.isin(network_seed, ensemble_seeds):
             continue  # Skip this network - not an ensemble member to use for saliency
     print('Loading network {}... '.format(path), end='', flush=True)
     ensemble.append(load_model(path, compile=False))
     print('Done.')
 
-print("\nLoaded {} networks with seeds: {}\n\n".format(len(ensemble), saliency_ensemble_seeds))
+print("\nLoaded {} networks with seeds: {}\n\n".format(len(ensemble), ensemble_seeds))
 
 ################################################################################
 #################### Build up all inputs from the held-out data
@@ -232,6 +275,7 @@ print('Done.\n\n')
 
 ################################################################################
 #################### Build up all the IceNet predictions with no permutation
+#################### and compute unpermuted baseline accuracy
 ################################################################################
 
 print('Building up all the IceNet predictions...\n')
@@ -250,7 +294,7 @@ correct_weighted_da = correct_da.weighted(mask_da)
 ds_acc_unpermuted = (correct_weighted_da.mean(dim=['y', 'x']) * 100)
 
 ################################################################################
-#################### Setup
+#################### Run permute-and-predict
 ################################################################################
 
 num_vars = len(all_ordered_variable_names)
