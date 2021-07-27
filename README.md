@@ -115,10 +115,11 @@ The bias-corrected forecasts are saved as NetCDFs in `data/forecasts/seas5/` wit
 
 - `python3 icenet/gen_data_loader_config.py`. Sets up the data loader configuration.
 This is saved as a JSON file dictating IceNet's input and output data,
-train/val/test splits, etc. The config file is used to instantiate the
-custom `IceNetDataLoader` class. Each config file is identified by a
+train/val/test splits, etc.The config file is used to instantiate the
+custom `IceNetDataLoader` class. Two example config files are provided in this repository
+in `dataloader_configs/`. Each config file is identified by a
 dataloader ID, determined by a timestamp and a user-provided name (e.g.
-`2021_06_15_1854_icenet_nature_communications`). This,
+`2021_06_15_1854_icenet_nature_communications`). The data loader ID,
 together with an architecture ID set in the training script, provides an 'IceNet ID'
 which uniquely identifies an IceNet ensemble model by its data configuration and
 architecture.
