@@ -73,7 +73,7 @@ environment.locked.yml`
 
 Note, the [CMIP6 variable naming convention](https://docs.google.com/spreadsheets/d/1UUtoz6Ofyjlpx5LdqhKcwHFz2SGoTQV2_yekHyMfL9Y/edit#gid=1221485271)
 is used throughout this project - e.g. `tas` for surface air temperature, `siconca` for
-sea ice concetration, etc.
+sea ice concentration, etc.
 
 - `python3 icenet/gen_masks.py`. This obtains masks for land, the polar holes,
 monthly maximum ice extent (the 'active grid cell region'), and the Arctic regions
@@ -138,7 +138,7 @@ training phase compared with using the data loader. To benefit from this, run
 for the train/val input/output data. To further benefit from the training speed
 improvements of `tf.data`, generate a TFRecords dataset from the NumPy tensors
 using `python3 icenet/gen_tfrecords_obs_train_val_datasets.py`. Whether to use
-the data loader, NumPy arrays, or TfRecords datasets for training is controlled by bools in
+the data loader, NumPy arrays, or TFRecords datasets for training is controlled by bools in
 `icenet/train_icenet.py`.
 
 ### 4) Develop the IceNet model
@@ -166,7 +166,7 @@ SLURM script.
 
 - `python3 icenet/predict_heldout_data.py`. Uses `xarray` to save predictions
 over the validation and test years as (2012-2020) as NetCDFs for IceNet and the
-linear trend benchmark. IceNet's forecasts are saved in 
+linear trend benchmark. IceNet's forecasts are saved in
 `data/forecasts/icenet/<dataloader_ID>/<architecture_ID>/`.
 For IceNet, the full forecast dataset has dimensions
 `(target date, y, x, lead time, ice class, seed)`, where `seed` specifies
@@ -215,11 +215,12 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 - `icenet/callbacks.py` defines training callbacks.
 - `icenet/metrics.py` defines training metrics.
 
-### Project structure: simplified output from `tree -r`
+### Project structure: simplified output from `tree`
 
 ```
 .
 ├── data
+│   ├── obs
 │   ├── cmip6
 │   │   ├── EC-Earth3
 │   │   │   ├── r10i1p1f1
@@ -244,10 +245,15 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 │   │       ├── EASE
 │   │       └── latlon
 │   ├── masks
-│   ├── network_datasets
-│   │   └── dataset1
-│   └── obs
+│   └── network_datasets
+│       └── dataset1
+│           ├── meta
+│           ├── obs
+│           ├── transfer
+│           └── norm_params.json
 ├── dataloader_configs
+│   ├── 2021_06_15_1854_icenet_nature_communications.json
+│   └── 2021_06_30_0954_icenet_pretrain_ablation.json
 ├── figures
 ├── icenet
 ├── logs
@@ -257,8 +263,13 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 │   └── wind_rotation_logs
 ├── results
 │   ├── forecast_results
+│   │   └── 2021_07_01_183913_forecast_results.csv
 │   ├── permute_and_predict_results
+│   │   └── permute_and_predict_results.csv
 │   └── uncertainty_results
+│       ├── ice_edge_region_results.csv
+│       ├── sip_bounding_results.csv
+│       └── uncertainty_results.csv
 └── trained_networks
     └── 2021_06_15_1854_icenet_nature_communications
         ├── obs_train_val_data
@@ -268,6 +279,9 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
         │       └── val
         └── unet_tempscale
             └── networks
+                ├── network_tempscaled_36.h5
+                ├── network_tempscaled_37.h5
+                :
 ```
 
 ### Acknowledgements
