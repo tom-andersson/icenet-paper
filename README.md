@@ -24,8 +24,10 @@ the commandline of a Unix-like machine with a GPU. If aiming to reproduce the
 results of the study, 1 TB of space should safely cover the memory requirements
 from the data downloaded and generated.
 
-If you run into any issues with this codebase please email me (tomand@bas.ac.uk) or
-raise an issue.
+If you run into any issues with this codebase or have any suggestions,
+please raise an issue or email me (tomand@bas.ac.uk)
+
+## Steps to reproduce paper
 
 ### 0) Preliminary setup
 
@@ -96,24 +98,32 @@ commands to acquire each climate simulation. This downloads the raw
 - `./rotate_wind_data_in_parallel.sh`. This rotates the ERA5 and CMIP6 wind vector data
 onto the EASE grid in parallel using `icenet/rotate_wind_data.py`.
 
-- `./download_seas5_forecasts_in_paralle.sh`. Downloads ECMWF SEAS5 SIC forecasts.
+- `./download_seas5_forecasts_in_parallel.sh`. Downloads ECMWF SEAS5 SIC forecasts.
 This runs multiple `python3 icenet/download_seas5_data.py`
 commands to acquire 2002-2020 SEAS5 forecasts for multiple lead times in parallel
-via the ECMWF MARS API.
+via the ECMWF MARS API and regrid the forecasts to EASE. The forecasts are saved to
+`data/forecasts/seas5/` in the folders `latlon/` and `EASE/`.
 
 - `python3 icenet/biascorrect_seas5_data.py`. Bias corrects the SEAS5 2012+ forecasts
 using 2002-2011 forecasts. Also computes SEAS5 sea ice probability (SIP) fields.
+The bias-corrected forecasts are saved as NetCDFs in `data/forecasts/seas5/` with dimensions
+`(target date, y, x, lead time)`.
 
-### 3) Set up IceNet's data loader and preprocess the raw data
+### 3) Process data
+
+#### 3.1) Set up IceNet's custom data loader
 
 - `python3 icenet/gen_data_loader_config.py`. Sets up the data loader configuration.
 This is saved as a JSON file dictating IceNet's input and output data,
 train/val/test splits, etc. The config file is used to instantiate the
 custom `IceNetDataLoader` class. Each config file is identified by a
-dataloader ID, determined by a timestamp and a user-provided name. This,
+dataloader ID, determined by a timestamp and a user-provided name (e.g.
+`2021_06_15_1854_icenet_nature_communications`). This,
 together with an architecture ID set in the training script, provides an 'IceNet ID'
 which uniquely identifies an IceNet ensemble model by its data configuration and
 architecture.
+
+#### 3.2) Preprocess the raw data
 
 - `python3 icenet/preproc_icenet_data.py`. Normalises the raw NetCDF data and saves it as
 monthly NumPy files. The normalisation parameters (mean/std dev or min/max)
@@ -151,36 +161,46 @@ to train an ensemble. Trained networks are saved in
 shared machine and familiar with SLURM, you may want to wrap this command in a
 SLURM script.
 
-#### 4.3) Compute IceNet's ensemble-mean temperature scaling parameters
+### 5) Produce forecasts
 
-- `python3 icenet/compute_ensemble_mean_temp_scaling.py`.
-
-### 5) Perform validation
-
-- `python3 icenet/predict_heldout_data.py`. Uses `xarray` to save monthly predictions
+- `python3 icenet/predict_heldout_data.py`. Uses `xarray` to save predictions
 over the validation and test years as (2012-2020) as NetCDFs for IceNet and the
-linear trend benchmark. For IceNet, the full forecast dataset has dimensions
-`(target date, y, x, lead time, seed, ice class)`, although an ensemble-mean
-SIP version is also computed, which only has the first four dimensions.
+linear trend benchmark. IceNet's forecasts are saved in 
+`data/forecasts/icenet/<dataloader_ID>/<architecture_ID>/`.
+For IceNet, the full forecast dataset has dimensions
+`(target date, y, x, lead time, ice class, seed)`, where `seed` specifies
+a single ensemble member or the ensemble-mean forecast. An ensemble-mean
+SIP forecast is also computed and saved as a separate, smaller file
+(which only has the first four dimensions).
+
+- Compute IceNet's ensemble-mean temperature scaling parameter for each lead time:
+`python3 icenet/compute_ensemble_mean_temp_scaling.py`. The new, ensemble-mean
+temperature-scaled sea ice probability (SIP) forecasts are saved to
+`data/forecasts/icenet/<dataloader_ID>/<architecture_ID>/icenet_sip_forecasts_tempscaled.nc`.
+These forecasts represent the final ensemble-mean IceNet model used for the paper.
+
+### 6) Analyse forecasts
 
 - `python3 icenet/analyse_heldout_predictions.py`. Loads the forecast data and computes
 forecast metrics, storing results in a global `pandas` DataFrame with
 `MultiIndex` `(model, ensemble member, lead time, target date)` and columns
-for each metric (binary accuracy and sea ice extent error). Optionally uses
+for each metric (binary accuracy and sea ice extent error). Uses
 `dask` to avoid loading the entire forecast datasets into memory, processing
 chunks in parallel to significantly speed up the analysis. Results are saved
-in `results/forecast_results/` with a timestamp to avoid overwriting.
+as CSV files in `results/forecast_results/` with a timestamp to avoid overwriting.
+Optionally pre-load the latest CSV file to append new models or metrics to the
+results without needing to re-analyse existing models.
 
 - `python3 icenet/analyse_uncertainty.py`. Assesses the calibration of IceNet and
 SEAS5's SIP forecasts. Also determines IceNet's ice edge region and assesses
-its ice edge bounding ability. Results are saved in `results/uncertainrt_results/`.
+its ice edge bounding ability. Results are saved in `results/uncertainty_results/`.
 
-### 6) Run the permute-and-predict method to explore IceNet's most important input variables
+### 7) Run the permute-and-predict method to explore IceNet's most important input variables
 
 - `python3 icenet/permute_and_predict.py`. Results are stored in
 `results/permute_and_predict_results/`.
 
-### 7) Generate the paper figures and tables
+### 8) Generate the paper figures and tables
 
 - `python3 icenet/plot_paper_figures.py`. Outputs to `figures/paper_figures/`.
 
@@ -220,7 +240,6 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
 │   │   │       └── unet_tempscale
 │   │   ├── linear_trend
 │   │   └── seas5
-│   │       ├── biascorrected
 │   │       ├── EASE
 │   │       └── latlon
 │   ├── masks
@@ -249,3 +268,7 @@ data loader, ERA5 and CMIP6 processing, learning rate decay, and video functiona
         └── unet_tempscale
             └── networks
 ```
+
+### Acknowledgements
+
+Thanks to James Byrne (BAS) and Tony Phillips (BAS) for direct contributions to this codebase.
