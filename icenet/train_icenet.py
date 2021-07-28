@@ -22,6 +22,10 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.optimizers import Adam
 import models
 
+import wandb
+from wandb.keras import WandbCallback
+from callbacks import IceNetPreTrainingEvaluator, BatchwiseWandbLogger, BatchwiseModelCheckpoint
+
 np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
 
 '''
@@ -77,11 +81,6 @@ os.environ['WANDB_DIR'] = config.WANDB_DIR
 os.environ['WANDB_CONFIG_DIR'] = config.WANDB_CONFIG_DIR
 os.environ['WANDB_CACHE_DIR'] = config.WANDB_CACHE_DIR
 
-# Must import _after_ environment variables are set
-import wandb
-from wandb.keras import WandbCallback
-from callbacks import IceNetPreTrainingEvaluator, BatchwiseWandbLogger, BatchwiseModelCheckpoint
-
 #### Set up wandb
 ####################################################################
 
@@ -134,7 +133,7 @@ temp_network_fname = 'network_tempscaled_{}.h5'.format(seed)  # temperature scal
 icenet_architecture = models.unet_batchnorm
 
 # 1) Use transfer learning before fine-tuning on obs
-do_transfer_learning = True
+do_transfer_learning = False
 
 # 2) Fine-tune on obs
 train_on_observations = True
