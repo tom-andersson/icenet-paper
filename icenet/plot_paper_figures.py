@@ -83,7 +83,7 @@ if len(results_df_fnames) >= 1:
     print('\n\nLoading most recent results dataset from {}'.format(results_df_fpath))
 
 # Do not interpret 'NA' as NaN
-results_df = pd.read_csv(results_df_fpath, keep_default_na=False)
+results_df = pd.read_csv(results_df_fpath, keep_default_na=False, comment='#')
 print('Done.\n')
 
 ### Probability analysis results
@@ -93,9 +93,9 @@ sip_bounding_df_fpath = os.path.join(config.uncertainty_results_folder, 'sip_bou
 sip_prime_90_fpath = os.path.join(icenet_folder, 'sip_prime_90.npy')
 
 print('Loading uncertainty analysis results... ', end='', flush=True)
-ice_edge_region_df = pd.read_csv(ice_edge_region_df_fpath)
-uncertainty_df = pd.read_csv(uncertainty_df_fpath)
-sip_bounding_df = pd.read_csv(sip_bounding_df_fpath)
+ice_edge_region_df = pd.read_csv(ice_edge_region_df_fpath, comment='#')
+uncertainty_df = pd.read_csv(uncertainty_df_fpath, comment='#')
+sip_bounding_df = pd.read_csv(sip_bounding_df_fpath, comment='#')
 sip_prime_90 = np.load(sip_prime_90_fpath)
 print('Done.\n')
 
@@ -112,11 +112,11 @@ ice_edge_region_df = ice_edge_region_df.set_index(['Leadtime', 'Forecast date'])
 ### Permute-and-predict results
 pap_results_df_fpath = os.path.join(config.permute_and_predict_results_folder,
                                     'permute_and_predict_results.csv')
-pap_results_df = pd.read_csv(pap_results_df_fpath)
+pap_results_df = pd.read_csv(pap_results_df_fpath, comment='#')
 pap_results_df['Forecast date'] = pd.to_datetime(pap_results_df['Forecast date'])
 
 ### SIE errors from the SIO
-sie_errors_df = pd.read_csv(os.path.join('data', 'sea_ice_outlook_errors.csv'))
+sie_errors_df = pd.read_csv(os.path.join(config.data_folder, 'sea_ice_outlook_errors.csv'), comment='#')
 sie_errors_df['Model'] = 'SIO'
 sie_errors_df = sie_errors_df.set_index(['year', 'init_month', 'Model'])
 
