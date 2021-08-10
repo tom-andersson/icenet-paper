@@ -27,16 +27,19 @@ from the data downloaded and generated.
 If you run into issues or have suggestions for improvement,
 please raise an issue or email me (tomand@bas.ac.uk).
 
-## Steps to plot paper figures directly from the paper's raw data
+## Steps to plot paper figures using the paper's results & forecasts
 
-To plot the paper figures directly from the paper's raw data
-and skip training the IceNet model,
-run the following after
+To reproduce the paper figures directly from the paper's 
+results and forecasts, run the following after
 setting up the conda environment (see Step 1 below):
 - `./download_paper_generated_data.sh`
+- `python3 icenet/gen_masks.py`
 - `python3 icenet/plot_paper_figures.py`. Figures are saved in `figures/paper_figures/`.
 
-## Steps to reproduce paper results from scratch
+From here, you could start to explore the results of the paper in
+more detail.
+
+## Steps to reproduce the paper's results from scratch
 
 ### 0) Preliminary setup
 
