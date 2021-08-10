@@ -1,5 +1,7 @@
 # IceNet: Seasonal Arctic sea ice forecasting with probabilistic deep learing
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5176573.svg)](https://doi.org/10.5281/zenodo.5176573)
+
 This codebase accompanies the Nature Communications paper _Seasonal Arctic sea
 ice forecasting with probabilistic deep
 learning_. It includes code to fully reproduce all the results of the study
