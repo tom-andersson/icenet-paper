@@ -20,6 +20,7 @@ and the linear trend extrapolation model.
 # --------------------------------------------------------------------
 
 
+@tf.keras.utils.register_keras_serializable()
 class TemperatureScale(tf.keras.layers.Layer):
     '''
     Implements the temperature scaling layer for probability calibration,
