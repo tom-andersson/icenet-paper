@@ -18,3 +18,8 @@ wget -O data/sea_ice_outlook_errors.csv 'https://ramadda.data.bas.ac.uk/reposito
 folder=data/forecasts/icenet/2021_06_15_1854_icenet_nature_communications/unet_tempscale
 mkdir -p $folder
 wget -O $folder/icenet_sip_forecasts_tempscaled.nc 'https://ramadda.data.bas.ac.uk/repository/entry/get/icenet_sip_forecasts_tempscaled.nc?entryid=synth%3A71820e7d-c628-4e32-969f-464b7efb187c%3AL2ZvcmVjYXN0X25ldGNkZi9pY2VuZXRfc2lwX2ZvcmVjYXN0c190ZW1wc2NhbGVkLm5j'
+
+# 90% ice edge bounding sea ice probability
+folder=trained_networks/2021_06_15_1854_icenet_nature_communications/unet_tempscale
+mkdir -p $folder
+echo -e "import numpy as np; sip_prime_90 = np.array(0.036); np.save('$folder/sip_prime_90.npy', sip_prime_90)" | python3                                                                                                       
