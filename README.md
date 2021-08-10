@@ -32,12 +32,11 @@ please raise an issue or email me (tomand@bas.ac.uk).
 To reproduce the paper figures directly from the paper's 
 results and forecasts, run the following after
 setting up the conda environment (see Step 1 below):
-- `./download_paper_generated_data.sh`
+- `./download_paper_generated_data.sh`. Downloads raw data from the paper. From here, you could start to explore the results of the paper in
+more detail.
+- `python3 icenet/download_sic_data.py`. This is needed to plot the ground truth ice edge.
 - `python3 icenet/gen_masks.py`
 - `python3 icenet/plot_paper_figures.py`. Figures are saved in `figures/paper_figures/`.
-
-From here, you could start to explore the results of the paper in
-more detail.
 
 ## Steps to reproduce the paper's results from scratch
 
