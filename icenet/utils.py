@@ -277,8 +277,13 @@ class IceNetDataPreProcessor(object):
         min, max (float): Pre-computed min and max for the normalisation.
         """
 
-        training_samples = da.sel(time=self.obs_train_dates).data
-        training_samples = training_samples.ravel()
+        if (min is not None and max is not None) or (mean is not None and std is not None):
+            # Function has been passed precomputed normalisation parameters
+            pass
+        else:
+            # Function will be computing new normalisation parameters
+            training_samples = da.sel(time=self.obs_train_dates).data
+            training_samples = training_samples.ravel()
 
         if not minmax:
             if mean is None and std is None:
@@ -482,7 +487,7 @@ class IceNetDataPreProcessor(object):
                 mean, std = None, None
                 min, max = None, None
 
-            else:
+            elif varname != 'siconca':
                 precomputed_params_exists = self.check_if_params_precomputed(varname, data_format)
 
                 if precomputed_params_exists:
@@ -498,7 +503,7 @@ class IceNetDataPreProcessor(object):
                         if self.verbose_level >= 2:
                             print("Using precomputed mean/std: {}/{}...  ".format(mean, std),
                                   end='', flush=True)
-                else:
+                elif not precomputed_params_exists:
                     mean, std = None, None
                     min, max = None, None
                     self.norm_params[varname] = {}
@@ -514,7 +519,8 @@ class IceNetDataPreProcessor(object):
                         self.norm_params[varname][data_format]['min'] = min
                         self.norm_params[varname][data_format]['max'] = max
                 elif not self.minmax:
-                    da, mean, std = self.normalise_array_using_all_training_months(da, self.minmax)
+                    da, mean, std = self.normalise_array_using_all_training_months(
+                        da, self.minmax, mean=mean, std=std)
                     if not precomputed_params_exists:
                         if self.verbose_level >= 2:
                             print("Newly computed mean/std: {}/{}...  ".format(mean, std),
