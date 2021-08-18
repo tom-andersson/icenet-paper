@@ -158,7 +158,7 @@ the data loader, NumPy arrays, or TFRecords datasets for training is controlled 
 #### 4.1) OPTIONAL: Run the hyperparameter search (skip if using default values from paper)
 
 - Set `icenet/train_icenet.py` up for hyperparameter tuning: Set pre-training
-and temperature scaling bools to False the user input section.
+and temperature scaling bools to `False` in the user input section.
 - `wandb sweep icenet/sweep.yaml`
 - Then run the `wandb agent` command that is printed.
 - Cancel the sweep after a sufficient picture on optimal hyperparameters is
@@ -188,13 +188,13 @@ SIP forecast is also computed and saved as a separate, smaller file
 
 - Compute IceNet's ensemble-mean temperature scaling parameter for each lead time:
 `python3 icenet/compute_ensemble_mean_temp_scaling.py`. The new, ensemble-mean
-temperature-scaled sea ice probability (SIP) forecasts are saved to
+temperature-scaled SIP forecasts are saved to
 `data/forecasts/icenet/<dataloader_ID>/<architecture_ID>/icenet_sip_forecasts_tempscaled.nc`.
 These forecasts represent the final ensemble-mean IceNet model used for the paper.
 
 ### 6) Analyse forecasts
 
-- `python3 icenet/analyse_heldout_predictions.py`. Loads the forecast data and computes
+- `python3 icenet/analyse_heldout_predictions.py`. Loads the NetCDF forecast data and computes
 forecast metrics, storing results in a global `pandas` DataFrame with
 `MultiIndex` `(model, ensemble member, lead time, target date)` and columns
 for each metric (binary accuracy and sea ice extent error). Uses
@@ -202,7 +202,9 @@ for each metric (binary accuracy and sea ice extent error). Uses
 chunks in parallel to significantly speed up the analysis. Results are saved
 as CSV files in `results/forecast_results/` with a timestamp to avoid overwriting.
 Optionally pre-load the latest CSV file to append new models or metrics to the
-results without needing to re-analyse existing models.
+results without needing to re-analyse existing models. Use this feature to append
+forecast results from other IceNet models (identified by their dataloader ID
+and architecture ID) to track the effect of design changes on forecast performance.
 
 - `python3 icenet/analyse_uncertainty.py`. Assesses the calibration of IceNet and
 SEAS5's SIP forecasts. Also determines IceNet's ice edge region and assesses
