@@ -113,7 +113,6 @@ n_forecast_months = dataloader.config['n_forecast_months']
 
 heldout_start = pd.Timestamp('2012-01-01')
 heldout_end = pd.Timestamp('2020-12-01')
-heldout_end = pd.Timestamp('2021-11-01')
 
 all_target_dates = pd.date_range(
     start=heldout_start,
