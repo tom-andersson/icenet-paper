@@ -174,7 +174,7 @@ if __name__ == "__main__":
             print('\n\nLoading previous results dataset from {}'.format(old_results_df_fpath))
 
         # Load previous results, do not interpret 'NA' as NaN
-        results_df = pd.read_csv(old_results_df_fpath, keep_default_na=False)
+        results_df = pd.read_csv(old_results_df_fpath, keep_default_na=False, comment='#')
 
         # Drop spurious index column if present
         results_df = results_df.drop('Unnamed: 0', axis=1, errors='ignore')
