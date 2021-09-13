@@ -338,7 +338,15 @@ class IceNetDataPreProcessor(object):
         if self.verbose_level >= 2:
             print('Saving {} {} monthly averages... '.format(data_format, varname), end='', flush=True)
 
-        for date in da.time.values:
+        # Allow for datasets without a time dimension (a single time slice)
+        dates = da.time.values
+        if hasattr(dates, '__iter__'):
+            pass  # Dataset has 'time' dimension; dates already iterable
+        else:
+            dates = [dates]  # Convert single time value to iterable
+            da = da.expand_dims({'time': dates})
+
+        for date in dates:
             slice = da.sel(time=date).data
             date = pd.Timestamp(date)
             year_str = '{:04d}'.format(date.year)
