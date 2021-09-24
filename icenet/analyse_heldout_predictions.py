@@ -120,34 +120,6 @@ if __name__ == "__main__":
     ### Initialise results dataframe
     ####################################################################
 
-    def create_results_dataset_index(model_compute_list):
-
-        '''
-        Returns a pandas.MultiIndex object of results dataset indexes for a
-        given list of models to compute metrics for. For IceNet, the 'Ensemble
-        member' column delineates the performance of each IceNet ensemble
-        member (identified by the integer random seed value it was trained
-        with) and the ensemble mean models ('ensemble' or 'ensemble_tempscaled').
-        '''
-
-        multi_index = pd.MultiIndex.from_product(
-            [model_compute_list, leadtimes, all_target_dates])
-
-        idxs = []
-        for row in multi_index:
-            model = row[0]
-            row = [[item] for item in row]
-            if model == icenet_ID:
-                idxs.extend(list(itertools.product(*row, icenet_seeds)))
-            else:
-                idxs.extend(list(itertools.product(*row, ['NA'])))
-
-        multi_index = pd.MultiIndex.from_tuples(
-            idxs, names=['Model', 'Leadtime', 'Forecast date', 'Ensemble member']).\
-            reorder_levels(['Model', 'Ensemble member', 'Leadtime', 'Forecast date'])
-
-        return multi_index
-
     heldout_start = pd.Timestamp('2012-01-01')
     heldout_end = pd.Timestamp('2020-12-01')
 
@@ -203,12 +175,14 @@ if __name__ == "__main__":
 
         # Add new models to the dataframe
         if len(new_models) > 0:
-            multi_index = create_results_dataset_index(new_models)
+            multi_index = utils.create_results_dataset_index(
+                new_models, leadtimes, all_target_dates, icenet_ID, icenet_seeds)
             results_df = results_df.append(pd.DataFrame(index=multi_index)).sort_index()
 
     else:
         # Instantiate new results dataframe
-        multi_index = create_results_dataset_index(model_compute_list)
+        multi_index = utils.create_results_dataset_index(
+            model_compute_list, leadtimes, all_target_dates, icenet_ID, icenet_seeds)
         results_df = pd.DataFrame(index=multi_index, columns=metric_compute_list, dtype=np.float32)
         results_df = results_df.sort_index()
 

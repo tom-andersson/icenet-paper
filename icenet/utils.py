@@ -1337,6 +1337,37 @@ class IceNetDataLoader(tf.keras.utils.Sequence):
 ################################################################################
 
 
+def create_results_dataset_index(model_compute_list, leadtimes,
+                                 all_target_dates, icenet_ID,
+                                 icenet_seeds):
+
+    '''
+    Returns a pandas.MultiIndex object of results dataset indexes for a
+    given list of models to compute metrics for. For IceNet, the 'Ensemble
+    member' column delineates the performance of each IceNet ensemble
+    member (identified by the integer random seed value it was trained
+    with) and the ensemble mean models ('ensemble' or 'ensemble_tempscaled').
+    '''
+
+    multi_index = pd.MultiIndex.from_product(
+        [model_compute_list, leadtimes, all_target_dates])
+
+    idxs = []
+    for row in multi_index:
+        model = row[0]
+        row = [[item] for item in row]
+        if model == icenet_ID:
+            idxs.extend(list(itertools.product(*row, icenet_seeds)))
+        else:
+            idxs.extend(list(itertools.product(*row, ['NA'])))
+
+    multi_index = pd.MultiIndex.from_tuples(
+        idxs, names=['Model', 'Leadtime', 'Forecast date', 'Ensemble member']).\
+        reorder_levels(['Model', 'Ensemble member', 'Leadtime', 'Forecast date'])
+
+    return multi_index
+
+
 def make_varname_verbose(varname, leadtime, fc_month_idx):
 
     '''
