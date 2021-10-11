@@ -285,7 +285,7 @@ val_dataloader.batch_size = wandb.config.batch_size
 
 # Set the seed
 np.random.seed(seed)
-tf.random.set_seed = seed
+tf.random.set_seed(seed)
 dataloader.set_seed(seed)
 dataloader.on_epoch_end()  # Randomly shuffle training samples
 
