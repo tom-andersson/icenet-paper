@@ -62,7 +62,7 @@ init_dates = [date.strftime('%Y-%m-%d') for date in init_dates]
 
 server = ECMWFService("mars", url="https://api.ecmwf.int/v1",
                       key=config.ECMWF_API_KEY,
-                      email=config.EMCWF_API_EMAIL)
+                      email=config.ECMWF_API_EMAIL)
 
 request_dict = {
     'class': 'od',  # For hi-res SEAS5 data (as opposed to 'c3')
@@ -122,13 +122,14 @@ if do_download:
 
     if os.path.exists(download_path) and not overwrite:
         print('File exists - skipping.')
-
+        do_download = False #change do_download so that we do not attempt to download
     elif os.path.exists(download_path) and overwrite:
         print('Deleting existing file.')
         os.remove(download_path)
+        do_download = True #for clarity
 
-    # File doesn't exist (or was just deleted)
-    else:
+    # File doesn't exist (or will be overwritten)
+    if do_download:
         server.execute(request_dict, download_path)
 
         dur = time.time() - tic
