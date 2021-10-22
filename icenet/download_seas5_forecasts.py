@@ -44,9 +44,9 @@ for folder in [download_folder, EASE_folder]:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-do_download = False  # Download the ECMWF C-3S historical SIC forecasts
+do_download = True  # Download the ECMWF SEAS5 historical SIC forecasts
 overwrite = True  # Whether to overwite downloaded/regridded data
-do_regrid = True  # Convert from GRIB to NetCDF and regrid from lat/lon to 19km NH EASE
+do_regrid = True  # Regrid from lat/lon to 25km NH EASE grid
 delete_after_regridding = True  # Delete large lat-lon data after regridding
 
 init_dates = pd.date_range(
