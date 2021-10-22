@@ -36,7 +36,7 @@ results and forecasts, run the following after
 setting up the conda environment (see Step 1 below):
 - `./download_paper_generated_data.sh`. Downloads raw data from the paper. From here, you could start to explore the results of the paper in
 more detail.
-- `python3 icenet/download_sic_data.py`. This is needed to plot the ground truth ice edge.
+- `python3 icenet/download_sic_data.py`. This is needed to plot the ground truth ice edge. Note this download can take 10-12 hours to complete due to the server-side monthly-average computation.
 - `python3 icenet/gen_masks.py`
 - `python3 icenet/plot_paper_figures.py`. Figures are saved in `figures/paper_figures/`.
 
@@ -84,16 +84,20 @@ environment.locked.yml`
 
 ### 2) Download data
 
-Note, the [CMIP6 variable naming convention](https://docs.google.com/spreadsheets/d/1UUtoz6Ofyjlpx5LdqhKcwHFz2SGoTQV2_yekHyMfL9Y/edit#gid=1221485271)
+The [CMIP6 variable naming convention](https://docs.google.com/spreadsheets/d/1UUtoz6Ofyjlpx5LdqhKcwHFz2SGoTQV2_yekHyMfL9Y/edit#gid=1221485271)
 is used throughout this project - e.g. `tas` for surface air temperature, `siconca` for
 sea ice concentration, etc.
+
+Warning: some downloads are slow and the net download time can take 1-2 days.
+It may be advisable to write a bash script to automatically execute all these
+commands in sequence and run it over a weekend.
 
 - `python3 icenet/gen_masks.py`. This obtains masks for land, the polar holes,
 monthly maximum ice extent (the 'active grid cell region'), and the Arctic regions
 & coastline.
 
 - `python3 icenet/download_sic_data.py`. Downloads OSI-SAF SIC data. This computes
-monthly-averaged SIC server-side, downloads the results, and bilinearly interpolates missing grid cells (e.g. polar hole).
+monthly-averaged SIC server-side, downloads the results, and bilinearly interpolates missing grid cells (e.g. polar hole). Note this download can take 10-12 hours to complete due to the server-side monthly-average computation.
 
 - `./download_era5_data_in_parallel.sh`. Downloads ERA5 reanalysis data.
 This runs multiple `python3 icenet/download_era5_data.py`
