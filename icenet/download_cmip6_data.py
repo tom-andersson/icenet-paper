@@ -328,19 +328,19 @@ for variable_id, variable_id_dict in source_id_dict['variable_dict'].items():
                 print('skipping this plevel due to existing file {}'.format(fpaths_EASE[plevel]), end='', flush=True)
                 continue
 
-                print('loading metadata... ', end='', flush=True)
+            print('loading metadata... ', end='', flush=True)
 
-                # Avoid 500MB DAP request limit
-                cmip6_da = xr.open_mfdataset(results, combine='by_coords', chunks={'time': '499MB'})[variable_id]
+            # Avoid 500MB DAP request limit
+            cmip6_da = xr.open_mfdataset(results, combine='by_coords', chunks={'time': '499MB'})[variable_id]
 
-                if plevel is not None:
-                    cmip6_da = cmip6_da.sel(plev=plevel)
+            if plevel is not None:
+                cmip6_da = cmip6_da.sel(plev=plevel)
 
-                print('downloading with xarray... ', end='', flush=True)
-                cmip6_da.compute()
+            print('downloading with xarray... ', end='', flush=True)
+            cmip6_da.compute()
 
-                print('saving to regrid in iris... ', end='', flush=True)
-                cmip6_da.to_netcdf(fpaths_latlon[plevel])
+            print('saving to regrid in iris... ', end='', flush=True)
+            cmip6_da.to_netcdf(fpaths_latlon[plevel])
 
     if do_regrid:
         for plevel in variable_id_dict['plevels']:
