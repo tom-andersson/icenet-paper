@@ -76,7 +76,7 @@ if __name__ == "__main__":
     model_compute_list = [icenet_ID, 'SEAS5', 'Linear trend']
     metric_compute_list = ['Binary accuracy', 'SIE error']
 
-    pre_load_results_df = True
+    pre_load_results_df = False
 
     ### Setup
     ####################################################################
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
         heldout_forecast_fpath = os.path.join(
             config.forecast_data_folder, 'icenet',
-            dataloader_ID, icenet_ID, 'icenet_forecasts.nc'
+            dataloader_ID, architecture_ID, 'icenet_forecasts.nc'
         )
 
         chunks = {'seed': 1}
