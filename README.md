@@ -36,7 +36,7 @@ results and forecasts, run the following after
 setting up the conda environment (see Step 1 below):
 - `./download_paper_generated_data.sh`. Downloads raw data from the paper. From here, you could start to explore the results of the paper in
 more detail.
-- `python3 icenet/download_sic_data.py`. This is needed to plot the ground truth ice edge. Note this download can take 10-12 hours to complete due to the server-side monthly-average computation.
+- `python3 icenet/download_sic_data.py`. This is needed to plot the ground truth ice edge. Note this download can take anywhere from 1 to 12 hours to complete.
 - `python3 icenet/gen_masks.py`
 - `python3 icenet/plot_paper_figures.py`. Figures are saved in `figures/paper_figures/`.
 
@@ -97,7 +97,7 @@ monthly maximum ice extent (the 'active grid cell region'), and the Arctic regio
 & coastline.
 
 - `python3 icenet/download_sic_data.py`. Downloads OSI-SAF SIC data. This computes
-monthly-averaged SIC server-side, downloads the results, and bilinearly interpolates missing grid cells (e.g. polar hole). Note this download can take 10-12 hours to complete due to the server-side monthly-average computation.
+monthly-averaged SIC server-side, downloads the results, and bilinearly interpolates missing grid cells (e.g. polar hole). Note this download can take anywhere from 1 to 12 hours to complete.
 
 - `./download_era5_data_in_parallel.sh`. Downloads ERA5 reanalysis data.
 This runs multiple `python3 icenet/download_era5_data.py`
