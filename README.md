@@ -27,7 +27,7 @@ AI Book](https://acocac.github.io/environmental-ai-book/polar/modelling/polar-mo
 
 The guidelines below assume you're working in
 the command line of a Unix-like machine with a GPU. If aiming to reproduce all the
-results of the study, 1 TB of space should safely cover the memory requirements
+results of the study, 1 TB of space should safely cover the storage requirements
 from the data downloaded and generated.
 
 If you run into issues or have suggestions for improvement,
