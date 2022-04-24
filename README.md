@@ -172,9 +172,9 @@ and temperature scaling bools to `False` in the user input section.
 - Cancel the sweep after a sufficient picture on optimal hyperparameters is
 built up on the [wandb.ai](https://wandb.ai/home) page.
 
-#### 4.2) Train IceNet2
+#### 4.2) Train IceNet
 
-- Train IceNet networks with `python3 icenet/train_icenet2.py`. This takes
+- Train IceNet networks with `python3 icenet/train_icenet.py`. This takes
 hyperameter settings and the random seed for network weight initalisation as
 command line inputs. Run this multiple times with different settings of `--seed`
 to train an ensemble. Trained networks are saved in
