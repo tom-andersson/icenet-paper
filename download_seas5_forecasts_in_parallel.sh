@@ -2,11 +2,11 @@
 
 mkdir -p logs/seas5_download_logs/
 
-for ((i=1; i<7; i++)); do
+for ((leadtime=1; leadtime<7; leadtime++)); do
 
-        python3 icenet/download_seas5_forecasts.py --leadtime $i > logs/seas5_download_logs/"$i.txt" 2>&1 &
+        python3 icenet/download_seas5_forecasts.py --leadtime $leadtime > logs/seas5_download_logs/"$leadtime.txt" 2>&1 &
 
-        echo -e "Running $(jobs -p | wc -w) jobs after submitting $init_date"
+        echo -e "Running $(jobs -p | wc -w) jobs after submitting lead time: $leadtime month/s"
 
-        sleep 1
+        sleep 2
 done
