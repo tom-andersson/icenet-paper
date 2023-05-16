@@ -119,12 +119,12 @@ commands to acquire each climate simulation. This downloads the raw
 onto the EASE grid in parallel using `icenet/rotate_wind_data.py`.
 
 - `./download_seas5_forecasts_in_parallel.sh`. Downloads ECMWF SEAS5 SIC forecasts.
-This runs multiple `python3 icenet/download_seas5_data.py`
+This runs multiple `python3 icenet/download_seas5_forecasts.py`
 commands to acquire 2002-2020 SEAS5 forecasts for multiple lead times in parallel
 via the ECMWF MARS API and regrid the forecasts to EASE. The forecasts are saved to
 `data/forecasts/seas5/` in the folders `latlon/` and `EASE/`.
 
-- `python3 icenet/biascorrect_seas5_data.py`. Bias corrects the SEAS5 2012+ forecasts
+- `python3 icenet/biascorrect_seas5_forecasts.py`. Bias corrects the SEAS5 2012+ forecasts
 using 2002-2011 forecasts. Also computes SEAS5 sea ice probability (SIP) fields.
 The bias-corrected forecasts are saved as NetCDFs in `data/forecasts/seas5/` with dimensions
 `(target date, y, x, lead time)`.
