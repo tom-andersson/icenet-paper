@@ -104,25 +104,27 @@ monthly maximum ice extent (the 'active grid cell region'), and the Arctic regio
 monthly-averaged SIC server-side, downloads the results, and bilinearly interpolates missing grid cells (e.g. polar hole). Note this download can take anywhere from 1 to 12 hours to complete.
 
 - `./download_era5_data_in_parallel.sh`. Downloads ERA5 reanalysis data.
-This runs multiple `python3 icenet/download_era5_data.py`
-commands to acquire each ERA5 variable in parallel. The raw ERA5 data is downloaded in
+This runs multiple parallel `python3 icenet/download_era5_data.py`
+commands in the background to acquire each ERA5 variable. The raw ERA5 data is downloaded in
 global latitude-longitude format and regridded to the EASE grid that
-OSI-SAF SIC data lies on.
+OSI-SAF SIC data lies on. Logs are output to `logs/era5_download_logs/`.
 
 - `./download_cmip6_data_in_parallel.sh`. Downloads CMIP6 climate simulation data.
-This runs multiple `python3 icenet/download_cmip6_data.py`
-commands to acquire each climate simulation. This downloads the raw
- CMIP6 data in global latitude-longitude format and regrids to the EASE grid that
- OSI-SAF SIC data lies on.
+This runs multiple parallel `python3 icenet/download_cmip6_data.py`
+commands in the background to download each climate simulation. The raw
+ CMIP6 data is regridded from global latitude-longitude format to the EASE grid that
+ OSI-SAF SIC data lies on. Logs are output to `logs/cmip6_download_logs/`
 
-- `./rotate_wind_data_in_parallel.sh`. This rotates the ERA5 and CMIP6 wind vector data
-onto the EASE grid in parallel using `icenet/rotate_wind_data.py`.
+- `./rotate_wind_data_in_parallel.sh`. This runs multiple parallel `python3 icenet/rotate_wind_data.py`
+commands in the background to rotate the ERA5 and CMIP6 wind vector data onto the EASE grid.
+Logs are output to `logs/wind_rotation_logs/`.
 
 - `./download_seas5_forecasts_in_parallel.sh`. Downloads ECMWF SEAS5 SIC forecasts.
-This runs multiple `python3 icenet/download_seas5_forecasts.py`
-commands to acquire 2002-2020 SEAS5 forecasts for multiple lead times in parallel
+This runs multiple parallel `python3 icenet/download_seas5_forecasts.py`
+commands to acquire 2002-2020 SEAS5 forecasts for each lead time
 via the ECMWF MARS API and regrid the forecasts to EASE. The forecasts are saved to
 `data/forecasts/seas5/` in the folders `latlon/` and `EASE/`.
+Logs are output to `logs/seas5_download_logs/`.
 
 - `python3 icenet/biascorrect_seas5_forecasts.py`. Bias corrects the SEAS5 2012+ forecasts
 using 2002-2011 forecasts. Also computes SEAS5 sea ice probability (SIP) fields.
@@ -161,7 +163,7 @@ using `python3 icenet/gen_tfrecords_obs_train_val_datasets.py`. Whether to use
 the data loader, NumPy arrays, or TFRecords datasets for training is controlled by bools in
 `icenet/train_icenet.py`.
 
-### 4) Develop the IceNet model
+### 4) Train IceNet
 
 #### 4.1) OPTIONAL: Run the hyperparameter search (skip if using default values from paper)
 
@@ -172,7 +174,7 @@ and temperature scaling bools to `False` in the user input section.
 - Cancel the sweep after a sufficient picture on optimal hyperparameters is
 built up on the [wandb.ai](https://wandb.ai/home) page.
 
-#### 4.2) Train IceNet
+#### 4.2) Run training
 
 - Train IceNet networks with `python3 icenet/train_icenet.py`. This takes
 hyperameter settings and the random seed for network weight initalisation as
