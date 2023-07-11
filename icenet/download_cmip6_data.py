@@ -63,7 +63,7 @@ gen_video = True
 download_dict = {
     'MRI-ESM2-0': {
         'experiment_ids': ['historical', 'ssp245'],
-        'data_nodes': ['esgf-data2.diasjp.net'],
+        'data_nodes': ['esgf-data03.diasjp.net'],
         'frequency': 'mon',
         'variable_dict': {
             'siconca': {
