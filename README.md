@@ -1,4 +1,4 @@
-# IceNet: Seasonal Arctic sea ice forecasting with probabilistic deep learing
+# IceNet: Seasonal Arctic sea ice forecasting with probabilistic deep learning
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5176573.svg)](https://doi.org/10.5281/zenodo.5176573)
 
