@@ -59,10 +59,10 @@ verbose_level = 2
 cmip_transfer_data = {
     'EC-Earth3': (
         'r2i1p1f1',
-        'r7i1p1f1',
-        'r10i1p1f1',
-        'r12i1p1f1',
-        'r14i1p1f1',
+#        'r7i1p1f1',
+#        'r10i1p1f1',
+#        'r12i1p1f1',
+#        'r14i1p1f1',
     ),
     'MRI-ESM2-0': (
         'r1i1p1f1',
