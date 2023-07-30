@@ -1,0 +1,30 @@
+name: icenet
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7.6
+  - tensorflow=2.2.0=gpu_py37h1a511ff_0
+  - xarray=0.16.2
+  - numpy=1.19
+  - pandas=1.0
+  - scipy=1.6
+  - dask=2.11
+  - distributed=2.30
+  - cartopy=0.18
+  - iris=2.4
+  - scikit-learn=0.22
+  - netcdf4=1.5
+  - imageio=2.8
+  - imageio-ffmpeg
+  - matplotlib=3.1
+  - seaborn=0.11
+  - tqdm=4.58
+  - plotly=4.5
+  - cdsapi=0.1
+  - wandb=0.11
+  - requests=2.25
+  - pip=19
+  - pip:
+    - ecmwf-api-client==1.5
