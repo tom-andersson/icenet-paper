@@ -56,9 +56,9 @@ overwrite = False
 delete_latlon_data = True  # Delete lat-lon intermediate files is use_xarray is True
 compress = True
 
-do_download = True
+do_download = False
 do_regrid = False
-gen_video = False
+gen_video = True
 
 download_dict = {
     'MRI-ESM2-0': {
@@ -70,7 +70,7 @@ download_dict = {
                 'include': True,
                 'table_id': 'SImon',
                 'plevels': None
-           },
+            },
             'tas': {
                 'include': True,
                 'table_id': 'Amon',
@@ -198,18 +198,6 @@ if not os.path.exists(download_folder):
 
 sic_day_fpath = os.path.join(config.obs_data_folder, 'ice_conc_nh_ease2-250_cdr-v2p0_197901021200.nc')
 
-if not os.path.exists(sic_day_fpath):
-    print("Downloading single daily SIC netCDF file for regridding ERA5 data to EASE grid...\n\n")
-
-    # Ignore "Missing CF-netCDF ancially data variable 'status_flag'" warning
-    warnings.simplefilter("ignore", UserWarning)
-
-    retrieve_sic_day_cmd = 'wget -m -nH --cut-dirs=6 -P {} ' \
-        'ftp://osisaf.met.no/reprocessed/ice/conc/v2p0/1979/01/ice_conc_nh_ease2-250_cdr-v2p0_197901021200.nc'
-    os.system(retrieve_sic_day_cmd.format(config.obs_data_folder))
-
-    print('Done.')
-
 # Load a single SIC map to obtain the EASE grid for regridding ERA data
 sic_EASE_cube = iris.load_cube(sic_day_fpath, 'sea_ice_area_fraction')
 
@@ -293,11 +281,6 @@ for variable_id, variable_id_dict in source_id_dict['variable_dict'].items():
         else:
             skip[plevel] = False
 
-    skipall = all([skip_bool for skip_bool in skip.values()])
-
-    if skipall:
-        print('skipping due to existing files {}'.format(existing_EASE_fpaths), end='', flush=True)
-        continue
 
     if do_download:
         print('searching ESGF... ', end='', flush=True)
@@ -331,7 +314,7 @@ for variable_id, variable_id_dict in source_id_dict['variable_dict'].items():
             print('loading metadata... ', end='', flush=True)
 
             # Avoid 500MB DAP request limit
-            cmip6_da = xr.open_mfdataset(results, combine='by_coords', chunks={'time': '400MB'})[variable_id]
+            cmip6_da = xr.open_mfdataset(results, combine='by_coords', chunks={'time': '499MB'})[variable_id]
 
             if plevel is not None:
                 cmip6_da = cmip6_da.sel(plev=plevel)
@@ -341,6 +324,48 @@ for variable_id, variable_id_dict in source_id_dict['variable_dict'].items():
 
             print('saving to regrid in iris... ', end='', flush=True)
             cmip6_da.to_netcdf(fpaths_latlon[plevel])
+
+    if do_regrid:
+        for plevel in variable_id_dict['plevels']:
+
+            if skip[plevel]:
+                print('skipping this plevel due to existing file {}'.format(fpaths_EASE[plevel]), end='', flush=True)
+                continue
+
+            cmip6_cube = iris.load_cube(fpaths_latlon[plevel])
+            cmip6_ease = utils.regrid_cmip6(cmip6_cube, sic_EASE_cube, verbose=True)
+
+            # Preprocessing
+            if variable_id == 'siconca':
+                cmip6_ease.data[cmip6_ease.data > 500] = 0.
+                cmip6_ease.data[:, land_mask] = 0.
+                if source_id == 'MRI-ESM2-0':
+                    cmip6_ease.data = cmip6_ease.data / 100.
+            elif variable_id == 'tos':
+                cmip6_ease.data[cmip6_ease.data > 500] = 0.
+                cmip6_ease.data[:, land_mask] = 0.
+
+            if cmip6_ease.data.dtype != np.float32:
+                cmip6_ease.data = cmip6_ease.data.astype(np.float32)
+
+            fpaths_EASE[plevel]
+            utils.save_cmip6(cmip6_ease, fpaths_EASE[plevel], compress, verbose=True)
+
+            if delete_latlon_data:
+                os.remove(fpaths_latlon[plevel])
+
+    if gen_video:
+        if (source_id, member_id) == ('MRI-ESM2-0', 'r2i1p1f1') or \
+                (source_id, member_id) == ('EC-Earth3', 'r2i1p1f1'):
+            print('\nGenerating video... ')
+            utils.xarray_to_video(
+                da=next(iter(xr.open_dataset(fpaths_EASE[plevel]).data_vars.values())),
+                video_path=video_fpaths[plevel],
+                fps=30,
+                mask=land_mask,
+                figsize=7,
+                dpi=150,
+            )
 
     print('Done.\n\n')
 

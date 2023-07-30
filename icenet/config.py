@@ -69,7 +69,7 @@ missing_dates = [pd.Timestamp('1986-4-1'), pd.Timestamp('1986-5-1'),
 ###############################################################################
 
 # Get API key from https://wandb.ai/authorize
-WANDB_API_KEY = 'YOUR-KEY-HERE'
+WANDB_API_KEY = '6948b602816c12c7ac4205b2cb04283a263f8c4b'
 # Absolute path to store wandb generated files (folder must exist)
 #   Note: user must have write access
 WANDB_DIR = '/path/to/wandb/dir'
@@ -81,5 +81,5 @@ WANDB_CACHE_DIR = '/path/to/wandb/cache/dir'
 ### ECMWF details
 ###############################################################################
 
-ECMWF_API_KEY = 'YOUR-KEY-HERE'
-ECMWF_API_EMAIL = 'YOUR-KEY-HERE'
+ECMWF_API_KEY = '4199ab2edaac8a2368da657690b0c1bb'
+ECMWF_API_EMAIL = 'chengchao.dun@anu.edu.au'

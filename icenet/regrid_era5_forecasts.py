@@ -54,8 +54,8 @@ variable = args.var
 # Whether to skip variables that have already been downloaded or regridded
 overwrite = True
 
-do_download = True
-do_regrid = False
+do_download = False
+do_regrid = True
 gen_video = False
 
 area = [90, -180, 0, 180]  # Latitude/longitude boundaries to download
@@ -282,52 +282,3 @@ if variable != 'rsds_and_rsus':
             dpi=150,
         )
 
-elif variable == 'rsds_and_rsus':
-
-    da_dict = {}
-    download_paths_dict = {}
-    for radiation_variable in ('rss', 'rsds'):
-
-        latlon_path = os.path.join(config.obs_data_folder, '{}_latlon.nc'.format(radiation_variable))
-
-        retrieve_CDS_data(var_dict['{}_cdi_name'.format(radiation_variable)], latlon_path)
-
-        download_paths_dict[radiation_variable] = latlon_path
-        da_dict[radiation_variable] = xr.open_dataarray(latlon_path)
-
-    # Compute upwelling solar, convert to W/m^2
-    rsus_da = (da_dict['rsds'] - da_dict['rss']) / (60 * 60 * 24)
-    rsus_da = rsus_da.rename('rsus')
-
-    rsds_da = da_dict['rsds'] / (60 * 60 * 24)
-
-    # Delete downloaded data
-    for path in download_paths_dict.values():
-        os.remove(path)
-
-    # Save new, processed data
-    rsds_da.to_netcdf(os.path.join(config.obs_data_folder, 'rsds_latlon.nc'))
-    rsus_da.to_netcdf(os.path.join(config.obs_data_folder, 'rsus_latlon.nc'))
-
-    for radiation_variable in ('rsus', 'rsds'):
-        # Regrid to EASE
-        EASE_path = os.path.join(config.obs_data_folder, '{}_EASE.nc'.format(radiation_variable))
-        regrid_var(radiation_variable, EASE_path)
-
-        if gen_video:
-            video_folder = os.path.join('videos', 'era5')
-            if not os.path.exists(video_folder):
-                os.makedirs(video_folder)
-            video_path = os.path.join(video_folder, f'{radiation_variable}.mp4')
-            xarray_to_video(
-                da=next(iter(xr.open_dataset(EASE_path).data_vars.values())),
-                video_path=video_path,
-                fps=6,
-                mask=land_mask,
-                figsize=10,
-                dpi=150,
-            )
-
-        # Delete lat-lon data
-        latlon_path = os.path.join(config.obs_data_folder, '{}_latlon.nc'.format(radiation_variable))
-        os.remove(latlon_path)
