@@ -57,7 +57,7 @@ delete_latlon_data = True  # Delete lat-lon intermediate files is use_xarray is 
 compress = True
 
 do_download = False
-do_regrid = False
+do_regrid = True
 gen_video = True
 
 download_dict = {
