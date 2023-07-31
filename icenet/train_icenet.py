@@ -141,7 +141,7 @@ train_on_observations = True
 # 3) Whether to use temperature scaling
 #   To train the T parameter without training network weights, set the following:
 #   pre_load_network=True, do_transfer_learning=False, train_on_observations=False
-use_temp_scaling = False
+use_temp_scaling = True
 
 # Amount by which to reduce the learning rate when fine-tuning begins
 #   Only applies if the network has been pre-trained within this script
