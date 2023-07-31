@@ -62,7 +62,6 @@ cmip_transfer_data = {
         'r2i1p1f1',
         'r3i1p1f1',
         'r4i1p1f1',
-        'r5i1p1f1',
     ),
 }
 
