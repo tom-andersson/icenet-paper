@@ -72,10 +72,10 @@ missing_dates = [pd.Timestamp('1986-4-1'), pd.Timestamp('1986-5-1'),
 WANDB_API_KEY = '6948b602816c12c7ac4205b2cb04283a263f8c4b'
 # Absolute path to store wandb generated files (folder must exist)
 #   Note: user must have write access
-WANDB_DIR = '/path/to/wandb/dir'
+WANDB_DIR = '/scratch/zv32/cd8380/icenet-paper/wandb/dir'
 # Absolute path to wandb config dir (
-WANDB_CONFIG_DIR = '/path/to/wandb/config/dir'
-WANDB_CACHE_DIR = '/path/to/wandb/cache/dir'
+WANDB_CONFIG_DIR = '/scratch/zv32/cd8380/icenet-paper/wandb/config/dir'
+WANDB_CACHE_DIR = '/scratch/zv32/cd8380/icenet-paper/wandb/cache/dir'
 
 ###############################################################################
 ### ECMWF details
