@@ -53,7 +53,7 @@ Authors: Tom Andersson, with dask help from James Byrne (BAS).
 
 n_workers = 8
 threads_per_worker = 2
-temp_dir = '/local/tmp'
+temp_dir = '/scratch/zv32/cd8380/tmp'
 dask.config.set(temporary_directory=os.path.expandvars(temp_dir))
 
 ####################################################################
