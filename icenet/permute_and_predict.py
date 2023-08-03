@@ -52,7 +52,7 @@ batch_size = 8
 
 # Which ensemble network seeds to use for the saliency analysis. 'all' or a list
 #   of integers.
-ensemble_seeds = all
+ensemble_seeds = [42]
 
 temp_scaling_used = True  # Whether or not the network being loaded used temperature scaling
 
