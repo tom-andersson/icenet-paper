@@ -44,7 +44,7 @@ dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 
 # Number of times to run the PaP method with different permutations (for averaging)
-n_runs = 10
+n_runs = 2
 
 # Number of samples per batch for running IceNet predictions over the validation set
 #   (reduce for smaller GPU memory)
@@ -52,7 +52,7 @@ batch_size = 8
 
 # Which ensemble network seeds to use for the saliency analysis. 'all' or a list
 #   of integers.
-ensemble_seeds = [38, 42, 43, 44, 46]
+ensemble_seeds = all
 
 temp_scaling_used = True  # Whether or not the network being loaded used temperature scaling
 
