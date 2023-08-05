@@ -67,7 +67,7 @@ if __name__ == "__main__":
     compute_with_dask = True
 
     #dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
-    dataloader_ID = '2021_06_30_0954_icenet_pretrain_ablation'
+    dataloader_ID = '2023_08_04_1511_icenet_nature_communications'
     architecture_ID = 'unet_tempscale'
 
     # Format for storing different IceNet results in one dataframe

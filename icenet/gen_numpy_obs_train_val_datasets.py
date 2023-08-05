@@ -16,7 +16,7 @@ trained_networks/<dataloader_ID>/obs_train_val_data/numpy/.
 #### User input
 ####################################################################
 
-dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
+dataloader_ID = '2023_08_04_1511_icenet_nature_communications'
 
 #### Data loaders; set up paths
 ###############################################################################

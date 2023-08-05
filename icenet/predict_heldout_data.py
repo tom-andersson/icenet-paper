@@ -34,7 +34,8 @@ script with relative ease.
 models = ['IceNet', 'Linear trend']
 
 # Specifications for the IceNet model to produce forecasts for
-dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
+#dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
+dataloader_ID = '2023_08_04_1511_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 tempscaling_used = True  # Whether to load networks with temperature scaling
 
