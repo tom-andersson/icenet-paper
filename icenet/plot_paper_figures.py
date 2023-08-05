@@ -109,11 +109,6 @@ ice_edge_region_df = ice_edge_region_df.drop('Unnamed: 0', axis=1, errors='ignor
 ice_edge_region_df['Forecast date'] = pd.to_datetime(ice_edge_region_df['Forecast date'])
 ice_edge_region_df = ice_edge_region_df.set_index(['Leadtime', 'Forecast date'])
 
-### Permute-and-predict results
-pap_results_df_fpath = os.path.join(config.permute_and_predict_results_folder,
-                                    'permute_and_predict_results.csv')
-pap_results_df = pd.read_csv(pap_results_df_fpath, comment='#')
-pap_results_df['Forecast date'] = pd.to_datetime(pap_results_df['Forecast date'])
 
 ### SIE errors from the SIO
 sie_errors_df = pd.read_csv(os.path.join(config.data_folder, 'sea_ice_outlook_errors.csv'), comment='#')
