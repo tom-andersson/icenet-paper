@@ -58,9 +58,8 @@ verbose_level = 2
 
 cmip_transfer_data = {
     'MRI-ESM2-0': (
-#        'r1i1p1f1',
+        'r1i1p1f1',
         'r2i1p1f1',
-#       'r3i1p1f1',
     ),
 }
 
