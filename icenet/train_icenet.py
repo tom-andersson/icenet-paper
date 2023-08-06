@@ -115,7 +115,7 @@ print('\n\n')
 #### User input
 ####################################################################
 
-dataloader_ID = '2023_08_04_1511_icenet_nature_communications'
+dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 
 eager_mode = False  # Run TensorFlow in 'graph' or 'eager' mode
