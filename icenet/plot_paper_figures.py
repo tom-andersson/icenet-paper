@@ -21,7 +21,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 ### User input
 ####################################################################
 
-dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
+dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 
 plot_tempscaled_ensemble = True
