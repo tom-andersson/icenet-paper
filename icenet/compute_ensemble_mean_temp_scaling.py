@@ -33,7 +33,7 @@ are saved to:
 #### User input
 ####################################################################
 
-dataloader_ID = '2023_08_04_1511_icenet_nature_communications'
+dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 
 val_start = '2012-01-01'
