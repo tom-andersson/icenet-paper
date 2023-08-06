@@ -17,8 +17,19 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Permute
 
 
+class HeNormal(tf.keras.initializers.Initializer):
+    def __init__(self, seed=None):
+        self.seed = seed
 
-def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer='he_normal'):
+    def __call__(self, shape, dtype=None):
+        dtype = dtype or K.floatx()
+        fan_in, _ = tf.keras.initializers.VarianceScaling._compute_fans(shape)
+        scale = 2. / fan_in
+        stddev = tf.math.sqrt(scale)
+        return tf.random.truncated_normal(shape, 0., stddev, dtype, seed=self.seed)
+
+
+def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer=HeNormal()):
     """
     这个ResidualConv2D函数定义了一个残差块，其中包括快捷连接和两个自定义可分离卷积层。
     快捷连接通过直接将输入连接到输出，提供了一种跳过一些层的机制，有助于缓解深度网络中的梯度消失问题。
@@ -44,7 +55,7 @@ class CustomSeparableConv2D(tf.keras.layers.Layer):
         self.activation = tf.keras.activations.get(activation)
         self.padding = padding.upper()
         if kernel_initializer == 'he_normal':
-            self.kernel_initializer = tf.keras.initializers.HeNormal()
+            self.kernel_initializer = HeNormal()
         else:
             self.kernel_initializer = tf.keras.initializers.GlorotUniform()
 
@@ -107,11 +118,11 @@ def channel_attention(input_feature, ratio=8):
     channel = input_feature.shape[channel_axis]
     shared_layer_one = Dense(channel // ratio,
                              activation='relu',
-                             kernel_initializer='he_normal',
+                             kernel_initializer=HeNormal(),
                              use_bias=True,
                              bias_initializer='zeros')
     shared_layer_two = Dense(channel,
-                             kernel_initializer='he_normal',
+                             kernel_initializer=HeNormal(),
                              use_bias=True,
                              bias_initializer='zeros')
 
@@ -154,7 +165,7 @@ def spatial_attention(input_feature):
                           strides=1,
                           padding='same',
                           activation='sigmoid',
-                          kernel_initializer='he_normal',
+                          kernel_initializer=HeNormal(),
                           use_bias=False)(concat)
 
     if tf.keras.backend.image_data_format() == "channels_first":
