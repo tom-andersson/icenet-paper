@@ -24,7 +24,7 @@ trained_networks/<dataloader_ID>/obs_train_val_data/tfrecords/.
 #### User input
 ####################################################################
 
-dataloader_ID = '2023_08_04_1511_icenet_nature_communications'
+dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
 
 #### Set up paths
 ####################################################################
