@@ -15,7 +15,6 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Reshape, Glob
 from tensorflow.keras.layers import Lambda, Concatenate
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Permute
-from tensorflow.keras.utils import register_keras_initializer
 
 
 class HeNormal(tf.keras.initializers.Initializer):
