@@ -98,6 +98,12 @@ class CustomSeparableConv2D(tf.keras.layers.Layer):
         })
         return config
 
+tf.keras.utils.register_keras_serializable(
+    'CustomSeparableConv2D',
+    lambda: CustomSeparableConv2D,
+    custom_objects={'CustomSeparableConv2D': CustomSeparableConv2D}
+)
+
 
 def channel_attention(input_feature, ratio=8):
     """
