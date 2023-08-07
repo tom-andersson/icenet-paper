@@ -69,10 +69,16 @@ if 'IceNet' in models:
     ensemble_seeds_and_mean.append('ensemble')
 
     networks = []
-    for network_fpath in network_fpaths:
-        print('Loading model from {}... '.format(network_fpath), end='', flush=True)
-        networks.append(load_model(network_fpath, compile=False,custom_objects={'CustomSeparableConv2D':CustomSeparableConv2D}))
-        print('Done.')
+    for model in models:
+        for network_fpath in network_fpaths:
+            if model == 'IceNet':
+                print('Loading model from {}... '.format(network_fpath), end='', flush=True)
+                networks.append(load_model(network_fpath, compile=False,
+                                           custom_objects={'CustomSeparableConv2D': CustomSeparableConv2D}))
+            else:
+                print('Loading model from {}... '.format(network_fpath), end='', flush=True)
+                networks.append(load_model(network_fpath, compile=False))
+            print('Done.')
 
     print("Temperature scaling factors:")
     for network, seed in zip(networks, ensemble_seeds):
