@@ -91,12 +91,9 @@ defaults = dict(
     batch_size=args.batch_size,
 )
 
-if not args.wandb:
-    print('\nNot using Weights and Biases.\n')
-    wandb_mode = 'disabled'
-else:
-    print('\nUsing Weights and Biases.\n')
-    wandb_mode = 'online'
+
+print('\nUsing Weights and Biases.\n')
+wandb_mode = 'online'
 
 wandb.init(
     project='icenet',
