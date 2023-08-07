@@ -370,3 +370,15 @@ def loss(y_true, y_pred):
 
 def weighted_metrics(y_true, y_pred):
     return tf.reduce_mean(tf.abs(y_true - y_pred))
+
+def _register_custom_layers():
+    """Registers the CustomSeparableConv2D layer with Keras."""
+    from tensorflow.keras.layers import register_keras_serializable
+
+    register_keras_serializable(
+        'CustomSeparableConv2D',
+        CustomSeparableConv2D,
+        custom_objects={'CustomSeparableConv2D': CustomSeparableConv2D}
+    )
+
+_register_custom_layers()
