@@ -35,7 +35,7 @@ def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kern
         return x
     return layer
 
-@tf.keras.utils.register_keras_serializable(name='CustomSeparableConv2D')
+@tf.keras.utils.register_keras_serializable()
 class CustomSeparableConv2D(tf.keras.layers.Layer):
     def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu',
                  **kwargs):
