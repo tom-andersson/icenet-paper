@@ -27,6 +27,7 @@ class HeNormal(tf.keras.initializers.Initializer):
         scale = 2. / fan_in
         stddev = tf.math.sqrt(scale)
         return tf.random.truncated_normal(shape, 0., stddev, dtype, seed=self.seed)
+tf.keras.initializers.register(name='HeNormal', initializer=HeNormal)
 
 
 def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer=HeNormal()):
