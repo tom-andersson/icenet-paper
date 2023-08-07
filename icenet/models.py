@@ -18,7 +18,7 @@ from tensorflow.keras.layers import Permute
 
 
 
-def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer=HeNormal()):
+def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer='he_normal'):
     """
     这个ResidualConv2D函数定义了一个残差块，其中包括快捷连接和两个自定义可分离卷积层。
     快捷连接通过直接将输入连接到输出，提供了一种跳过一些层的机制，有助于缓解深度网络中的梯度消失问题。
@@ -108,11 +108,11 @@ def channel_attention(input_feature, ratio=8):
     channel = input_feature.shape[channel_axis]
     shared_layer_one = Dense(channel // ratio,
                              activation='relu',
-                             kernel_initializer=HeNormal(),
+                             kernel_initializer='he_normal',
                              use_bias=True,
                              bias_initializer='zeros')
     shared_layer_two = Dense(channel,
-                             kernel_initializer=HeNormal(),
+                             kernel_initializer='he_normal',
                              use_bias=True,
                              bias_initializer='zeros')
 
@@ -155,7 +155,7 @@ def spatial_attention(input_feature):
                           strides=1,
                           padding='same',
                           activation='sigmoid',
-                          kernel_initializer=HeNormal(),
+                          kernel_initializer='he_normal',
                           use_bias=False)(concat)
 
     if tf.keras.backend.image_data_format() == "channels_first":
