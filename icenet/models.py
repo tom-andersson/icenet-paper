@@ -17,17 +17,6 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Permute
 
 
-class HeNormal(tf.keras.initializers.Initializer):
-    def __init__(self, seed=None):
-        self.seed = seed
-
-    def __call__(self, shape, dtype=None):
-        dtype = dtype or K.floatx()
-        fan_in = shape[0]
-        scale = 2. / fan_in
-        stddev = tf.math.sqrt(scale)
-        return tf.random.truncated_normal(shape, 0., stddev, dtype, seed=self.seed)
-
 
 def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer=HeNormal()):
     """
