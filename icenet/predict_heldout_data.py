@@ -12,7 +12,6 @@ from models import linear_trend_forecast
 from utils import IceNetDataLoader
 from tensorflow.keras.models import load_model
 from models import CustomSeparableConv2D
-from models import HeNormal
 '''
 Produces SIP forecasts from IceNet and SIC forecasts from the linear trend
 model. Stores the forecasts in xarray.DataArrays and saves them as NetCDF files
@@ -31,7 +30,6 @@ script with relative ease.
 '''
 
 ####################################################################
-tf.keras.utils.get_custom_objects()['HeNormal'] = HeNormal
 
 # List of models to produce forecasts for
 models = ['IceNet', 'Linear trend']
