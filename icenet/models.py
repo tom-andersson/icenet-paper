@@ -48,14 +48,15 @@ def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kern
 
 
 class CustomSeparableConv2D(tf.keras.layers.Layer):
-    def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu', **kwargs):
-        super(CustomSeparableConv2D, self).__init__(**kwargs)
+    def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu',
+                 **kwargs):
+        super(CustomSeparableConv2D,self).__init__(**kwargs)
         self.filters = filters
         self.kernel_size = kernel_size
         self.activation = tf.keras.activations.get(activation)
         self.padding = padding.upper()
         if kernel_initializer == 'he_normal':
-            self.kernel_initializer = HeNormal()
+            self.kernel_initializer = tf.keras.initializers.HeNormal()
         else:
             self.kernel_initializer = tf.keras.initializers.GlorotUniform()
 
