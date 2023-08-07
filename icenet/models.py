@@ -14,7 +14,7 @@ from tensorflow.keras.layers import Dropout, LeakyReLU, Add
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Reshape, GlobalMaxPooling2D, Activation, multiply
 from tensorflow.keras.layers import Lambda, Concatenate
 from tensorflow.keras import backend as K
-from tensorflow.keras.layers import Permute
+from tensorflow.keras.layers import Permute,Layer,Input
 
 
 
@@ -98,7 +98,7 @@ class CustomSeparableConv2D(tf.keras.layers.Layer):
         })
         return config
 
-K.register_custom_activation('CustomSeparableConv2D', CustomSeparableConv2D)
+K.register_custom_layer('CustomSeparableConv2D', CustomSeparableConv2D)
 
 def channel_attention(input_feature, ratio=8):
     """
