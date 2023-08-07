@@ -36,7 +36,7 @@ models = ['IceNet', 'Linear trend']
 
 # Specifications for the IceNet model to produce forecasts for
 dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
-architecture_ID = 'unet_tempscale'
+architecture_ID = 'oringial_model'
 tempscaling_used = True  # Whether to load networks with temperature scaling
 
 #### Load network and dataloader
