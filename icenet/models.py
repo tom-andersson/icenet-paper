@@ -13,8 +13,10 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import DepthwiseConv2D, Conv2D
 from tensorflow.keras.layers import Dropout, LeakyReLU, Add
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Reshape, GlobalMaxPooling2D, Activation, multiply
-from keras.layers import Lambda, Concatenate
-from keras import backend as K
+from tensorflow.keras.layers import Lambda, Concatenate
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Permute
+
 
 
 
