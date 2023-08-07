@@ -30,7 +30,7 @@ edge region over the test years.
 ####################################################################
 
 dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
-architecture_ID = 'unet_tempscale'
+architecture_ID = 'oringial_model'
 
 use_tempscaled_ensemble = True
 
