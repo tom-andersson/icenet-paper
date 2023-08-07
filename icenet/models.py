@@ -16,25 +16,6 @@ from tensorflow.keras.layers import Lambda, Concatenate
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Permute,Layer,Input
 
-
-
-def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer='he_normal'):
-    """
-    这个ResidualConv2D函数定义了一个残差块，其中包括快捷连接和两个自定义可分离卷积层。
-    快捷连接通过直接将输入连接到输出，提供了一种跳过一些层的机制，有助于缓解深度网络中的梯度消失问题。
-    """
-    def layer(input_tensor):
-       
-        shortcut = Conv2D(filters, (1, 1), padding=padding, kernel_initializer=kernel_initializer)(input_tensor)
-        x = CustomSeparableConv2D(filters, kernel_size, activation=None, padding=padding, kernel_initializer=kernel_initializer)(input_tensor)
-        x = LeakyReLU(alpha=0.1)(x)
-        x = CustomSeparableConv2D(filters, kernel_size, activation=None, padding=padding, kernel_initializer=kernel_initializer)(x)
-        x = LeakyReLU(alpha=0.1)(x)
-        x = Add()([shortcut, x])
-
-        return x
-    return layer
-
 @tf.keras.utils.register_keras_serializable()
 class CustomSeparableConv2D(tf.keras.layers.Layer):
     def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu',
@@ -97,6 +78,23 @@ class CustomSeparableConv2D(tf.keras.layers.Layer):
             'activation': tf.keras.activations.serialize(self.activation)
         })
         return config
+
+def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer='he_normal'):
+    """
+    这个ResidualConv2D函数定义了一个残差块，其中包括快捷连接和两个自定义可分离卷积层。
+    快捷连接通过直接将输入连接到输出，提供了一种跳过一些层的机制，有助于缓解深度网络中的梯度消失问题。
+    """
+    def layer(input_tensor):
+       
+        shortcut = Conv2D(filters, (1, 1), padding=padding, kernel_initializer=kernel_initializer)(input_tensor)
+        x = CustomSeparableConv2D(filters, kernel_size, activation=None, padding=padding, kernel_initializer=kernel_initializer)(input_tensor)
+        x = LeakyReLU(alpha=0.1)(x)
+        x = CustomSeparableConv2D(filters, kernel_size, activation=None, padding=padding, kernel_initializer=kernel_initializer)(x)
+        x = LeakyReLU(alpha=0.1)(x)
+        x = Add()([shortcut, x])
+
+        return x
+    return layer
 
 
 def channel_attention(input_feature, ratio=8):
