@@ -164,7 +164,7 @@ sample_callbacks_at_zero = False
 prev_best = None
 
 num_epochs = 1
-num_transfer_epochs = 2
+num_transfer_epochs = 1
 
 steps_per_epoch = None
 
