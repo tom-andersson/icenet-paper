@@ -30,6 +30,7 @@ script with relative ease.
 '''
 
 ####################################################################
+tf.keras.utils.get_custom_objects()['HeNormal'] = HeNormal
 
 # List of models to produce forecasts for
 models = ['IceNet', 'Linear trend']
