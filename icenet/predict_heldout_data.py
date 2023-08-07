@@ -33,10 +33,6 @@ script with relative ease.
 
 # List of models to produce forecasts for
 models = ['IceNet', 'Linear trend']
-custom_objects = {
-    'CustomSeparableConv2D': CustomSeparableConv2D
-}
-
 
 # Specifications for the IceNet model to produce forecasts for
 #dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
