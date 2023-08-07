@@ -37,66 +37,24 @@ def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kern
 
 
 class CustomSeparableConv2D(tf.keras.layers.Layer):
-    def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu',
+    def __init__(self, filters, kernel_size, activation='relu', padding='same', kernel_initializer='he_normal',
                  **kwargs):
-        super(CustomSeparableConv2D,self).__init__(**kwargs)
-        self.filters = filters
-        self.kernel_size = kernel_size
-        self.activation = tf.keras.activations.get(activation)
-        self.padding = padding.upper()
-        if kernel_initializer == 'he_normal':
-            self.kernel_initializer = tf.keras.initializers.HeNormal()
-        else:
-            self.kernel_initializer = tf.keras.initializers.GlorotUniform()
+        
+        super(CustomSeparableConv2D, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        input_channels = input_shape[-1]
+        self.depthwise_conv2d = DepthwiseConv2D(kernel_size, activation=activation, padding=padding, depth_multiplier=1,
+                                                depthwise_initializer=kernel_initializer)
 
-        # Depthwise convolution
-        self.depthwise_filter = self.add_weight(
-            shape=(self.kernel_size, self.kernel_size) + (input_channels, 1),
-            initializer=self.kernel_initializer,
-            trainable=True,
-            name='depthwise_filter'
-        )
-
-        # Pointwise convolution
-        self.pointwise_filter = self.add_weight(
-            shape=(1, 1, input_channels, self.filters),
-            initializer=self.kernel_initializer,
-            trainable=True,
-            name='pointwise_filter'
-        )
+        self.pointwise_conv2d = Conv2D(filters, 1, activation=activation, padding=padding,
+                                       kernel_initializer=kernel_initializer)
 
     def call(self, inputs):
-        depthwise_output = tf.nn.depthwise_conv2d(
-            inputs,
-            self.depthwise_filter,
-            strides=(1, 1, 1, 1),
-            padding=self.padding
-        )
 
-        pointwise_output = tf.nn.conv2d(
-            depthwise_output,
-            self.pointwise_filter,
-            strides=(1, 1, 1, 1),
-            padding=self.padding
-        )
+        x = self.depthwise_conv2d(inputs)
 
-        # pointwise_output = convolution_2d(depthwise_output,
-        # self.pointwise_filter, self.padding.lower())
+        x = self.pointwise_conv2d(x)
 
-        output = self.activation(pointwise_output)
-        return output
-
-    def get_config(self):
-        config = super(CustomSeparableConv2D, self).get_config()
-        config.update({
-            'filters': self.filters,
-            'kernel_size': self.kernel_size,
-            'activation': tf.keras.activations.serialize(self.activation)
-        })
-        return config
+        return x
 
 def channel_attention(input_feature, ratio=8):
     """
