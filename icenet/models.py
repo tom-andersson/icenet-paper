@@ -37,7 +37,8 @@ def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kern
 
 
 class CustomSeparableConv2D(tf.keras.layers.Layer):
-  def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu', **kwargs):
+    def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu',
+                 **kwargs):
         super(CustomSeparableConv2D, self).__init__(**kwargs)
         self.filters = filters
         self.kernel_size = kernel_size
@@ -96,6 +97,7 @@ class CustomSeparableConv2D(tf.keras.layers.Layer):
             'activation': tf.keras.activations.serialize(self.activation)
         })
         return config
+
 
 def channel_attention(input_feature, ratio=8):
     """
