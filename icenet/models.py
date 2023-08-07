@@ -15,6 +15,7 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Reshape, Glob
 from tensorflow.keras.layers import Lambda, Concatenate
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Permute
+from tensorflow.keras.utils import register_keras_initializer
 
 
 class HeNormal(tf.keras.initializers.Initializer):
@@ -27,7 +28,8 @@ class HeNormal(tf.keras.initializers.Initializer):
         scale = 2. / fan_in
         stddev = tf.math.sqrt(scale)
         return tf.random.truncated_normal(shape, 0., stddev, dtype, seed=self.seed)
-tf.keras.initializers.register(name='HeNormal', initializer=HeNormal)
+
+register_keras_initializer(HeNormal)
 
 
 def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kernel_initializer=HeNormal()):
