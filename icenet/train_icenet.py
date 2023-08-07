@@ -166,7 +166,7 @@ sample_callbacks_at_zero = False
 #   (None to disable the minimum)
 prev_best = None
 
-num_epochs = 50
+num_epochs = 1
 num_transfer_epochs = 2
 
 steps_per_epoch = None
