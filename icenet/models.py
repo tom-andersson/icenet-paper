@@ -23,7 +23,7 @@ class HeNormal(tf.keras.initializers.Initializer):
 
     def __call__(self, shape, dtype=None):
         dtype = dtype or K.floatx()
-        fan_in = tf.keras.backend.int_shape(shape)[0]
+        fan_in = shape[0]
         scale = 2. / fan_in
         stddev = tf.math.sqrt(scale)
         return tf.random.truncated_normal(shape, 0., stddev, dtype, seed=self.seed)
