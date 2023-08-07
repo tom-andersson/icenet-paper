@@ -7,12 +7,9 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 from tqdm import tqdm
-import tensorflow as tf
 from models import linear_trend_forecast
 from utils import IceNetDataLoader
 from tensorflow.keras.models import load_model
-from models import CustomSeparableConv2D
-
 
 '''
 Produces SIP forecasts from IceNet and SIC forecasts from the linear trend
@@ -37,8 +34,7 @@ script with relative ease.
 models = ['IceNet', 'Linear trend']
 
 # Specifications for the IceNet model to produce forecasts for
-#dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
-dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
+dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 tempscaling_used = True  # Whether to load networks with temperature scaling
 
@@ -71,15 +67,10 @@ if 'IceNet' in models:
     ensemble_seeds_and_mean.append('ensemble')
 
     networks = []
-    for model in models:
-        for network_fpath in network_fpaths:
-            if model == 'IceNet':
-                print('Loading model from {}... '.format(network_fpath), end='', flush=True)
-                networks.append(load_model(network_fpath, compile=False, custom_objects={'CustomSeparableConv2D': CustomSeparableConv2D}))
-            else:
-                print('Loading model from {}... '.format(network_fpath), end='', flush=True)
-                networks.append(load_model(network_fpath, compile=False))
-            print('Done.')
+    for network_fpath in network_fpaths:
+        print('Loading model from {}... '.format(network_fpath), end='', flush=True)
+        networks.append(load_model(network_fpath, compile=False))
+        print('Done.')
 
     print("Temperature scaling factors:")
     for network, seed in zip(networks, ensemble_seeds):
