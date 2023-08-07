@@ -98,7 +98,6 @@ class CustomSeparableConv2D(tf.keras.layers.Layer):
         })
         return config
 
-K.register_custom_layer('CustomSeparableConv2D', CustomSeparableConv2D)
 
 def channel_attention(input_feature, ratio=8):
     """
