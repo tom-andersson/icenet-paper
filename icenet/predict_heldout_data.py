@@ -10,6 +10,7 @@ from tqdm import tqdm
 from models import linear_trend_forecast
 from utils import IceNetDataLoader
 from tensorflow.keras.models import load_model
+from models import CustomSeparableConv2D
 
 '''
 Produces SIP forecasts from IceNet and SIC forecasts from the linear trend
