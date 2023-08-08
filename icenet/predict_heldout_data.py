@@ -7,7 +7,7 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 from tqdm import tqdm
-from models1 import linear_trend_forecast
+from models import linear_trend_forecast
 from utils import IceNetDataLoader
 from tensorflow.keras.models import load_model
 

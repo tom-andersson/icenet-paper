@@ -130,7 +130,7 @@ transfer_network_fname = 'network_transfer_{}.h5'.format(seed)  # trained w/ cmi
 network_fname = 'network' + '_{}'.format(seed) + '.h5'  # trained w/ obs
 temp_network_fname = 'network_tempscaled_{}.h5'.format(seed)  # temperature scaled
 
-icenet_architecture = models1.unet_batchnorm
+icenet_architecture = models.unet_batchnorm
 
 # 1) Use transfer learning before fine-tuning on obs
 do_transfer_learning = True
@@ -195,7 +195,7 @@ mcMode = 'max'
 custom_objects = {
     'categorical_focal_loss': loss,
     'ConstructLeadtimeAccuracy': ConstructLeadtimeAccuracy,
-    'TemperatureScale': models1.TemperatureScale,
+    'TemperatureScale': models.TemperatureScale,
 }
 
 metric = ConstructLeadtimeAccuracy(name='acc_mean', use_all_forecast_months=True)
