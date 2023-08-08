@@ -135,7 +135,7 @@ temp_network_fname = 'network_tempscaled_{}.h5'.format(seed)  # temperature scal
 icenet_architecture = models.unet_batchnorm
 
 # 1) Use transfer learning before fine-tuning on obs
-do_transfer_learning = True
+do_transfer_learning = False
 
 # 2) Fine-tune on obs
 train_on_observations = True
@@ -143,7 +143,7 @@ train_on_observations = True
 # 3) Whether to use temperature scaling
 #   To train the T parameter without training network weights, set the following:
 #   pre_load_network=True, do_transfer_learning=False, train_on_observations=False
-use_temp_scaling = True
+use_temp_scaling = False
 
 # Amount by which to reduce the learning rate when fine-tuning begins
 #   Only applies if the network has been pre-trained within this script
