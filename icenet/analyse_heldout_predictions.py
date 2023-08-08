@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     #dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
     dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
-    architecture_ID = 'oringial_model'
+    architecture_ID = 'unet_tempscale'
 
     # Format for storing different IceNet results in one dataframe
     icenet_ID = 'IceNet__{}__{}'.format(dataloader_ID, architecture_ID)
