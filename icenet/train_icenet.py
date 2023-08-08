@@ -7,6 +7,7 @@ import json
 import glob
 import argparse
 import scipy
+from scipy import optimize
 import tensorflow as tf
 import time
 import re
