@@ -49,53 +49,66 @@ def ResidualConv2D(filters, kernel_size, activation='relu', padding='same', kern
         return x
     return layer
 
-
 class CustomSeparableConv2D(tf.keras.layers.Layer):
-    """
-    此CustomSeparableConv2D类定义了一个自定义的可分离卷积层。
-    它首先使用深度卷积在每个通道上单独应用卷积，然后使用1x1卷积（点卷积）来组合这些通道。
-    这种方法与常规卷积相比，通常可以减少参数数量并提高效率。
-    """
-
-    def __init__(self, filters, kernel_size, activation='relu', padding='same', kernel_initializer='he_normal',
-                 **kwargs):
-        # 调用父类构造器，允许在创建层时传递自定义参数
+    def __init__(self, filters, kernel_size, padding='SAME', kernel_initializer='he_normal', activation='relu', **kwargs):
         super(CustomSeparableConv2D, self).__init__(**kwargs)
         self.filters = filters
         self.kernel_size = kernel_size
-        # 创建一个深度卷积层，它会在每个输入通道上单独应用卷积
-        # 这可以有效地减少参数数量，并允许模型学习跨通道的特征
-        # depth_multiplier 参数确定每个输入通道的输出通道数
-        # 在此情况下，depth_multiplier 设置为1，意味着输入和输出通道数量相同
-        self.depthwise_conv2d = DepthwiseConv2D(kernel_size, activation=activation, padding=padding, depth_multiplier=1,
-                                                depthwise_initializer=kernel_initializer)
+        self.activation = tf.keras.activations.get(activation)
+        self.padding = padding.upper()
+        if kernel_initializer == 'he_normal':
+            self.kernel_initializer = tf.keras.initializers.HeNormal()
+        else:
+            self.kernel_initializer = tf.keras.initializers.GlorotUniform()
 
-        # 创建一个点卷积层，它具有1x1的卷积核
-        # 该层用于组合深度卷积层产生的通道特征
-        # 通过这种方式，模型可以学习如何最有效地组合跨通道的信息
-        self.pointwise_conv2d = Conv2D(filters, 1, activation=activation, padding=padding,
-                                       kernel_initializer=kernel_initializer)
+    def build(self, input_shape):
+        input_channels = input_shape[-1]
+
+        # Depthwise convolution
+        self.depthwise_filter = self.add_weight(
+            shape=(self.kernel_size, self.kernel_size) + (input_channels, 1),
+            initializer=self.kernel_initializer,
+            trainable=True,
+            name='depthwise_filter'
+        )
+
+        # Pointwise convolution
+        self.pointwise_filter = self.add_weight(
+            shape=(1, 1, input_channels, self.filters),
+            initializer=self.kernel_initializer,
+            trainable=True,
+            name='pointwise_filter'
+        )
 
     def call(self, inputs):
-        # 通过深度卷积层传递输入
-        # 这将在每个通道上单独应用卷积，产生与输入通道数相同的输出通道数
-        x = self.depthwise_conv2d(inputs)
+        depthwise_output = tf.nn.depthwise_conv2d(
+            inputs,
+            self.depthwise_filter,
+            strides=(1, 1, 1, 1),
+            padding=self.padding
+        )
 
-        # 通过点卷积层传递深度卷积的输出
-        # 该层将组合不同通道的特征，并产生最终的输出通道数，由“filters”参数确定
-        x = self.pointwise_conv2d(x)
+        pointwise_output = tf.nn.conv2d(
+            depthwise_output,
+            self.pointwise_filter,
+            strides=(1, 1, 1, 1),
+            padding=self.padding
+        )
 
-        return x
+        # pointwise_output = convolution_2d(depthwise_output,
+        # self.pointwise_filter, self.padding.lower())
+
+        output = self.activation(pointwise_output)
+        return output
 
     def get_config(self):
         config = super(CustomSeparableConv2D, self).get_config()
         config.update({
             'filters': self.filters,
             'kernel_size': self.kernel_size,
-            # Add any other configuration parameters here
+            'activation': tf.keras.activations.serialize(self.activation)
         })
         return config
-
 
 
 def channel_attention(input_feature, ratio=8):
