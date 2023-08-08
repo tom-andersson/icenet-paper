@@ -21,7 +21,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 ### User input
 ####################################################################
 
-dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
+dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 
 plot_tempscaled_ensemble = True
@@ -108,8 +108,6 @@ uncertainty_df = uncertainty_df.set_index(['Model', 'Forecast date']).sort_index
 ice_edge_region_df = ice_edge_region_df.drop('Unnamed: 0', axis=1, errors='ignore')
 ice_edge_region_df['Forecast date'] = pd.to_datetime(ice_edge_region_df['Forecast date'])
 ice_edge_region_df = ice_edge_region_df.set_index(['Leadtime', 'Forecast date'])
-
-
 
 ### SIE errors from the SIO
 sie_errors_df = pd.read_csv(os.path.join(config.data_folder, 'sea_ice_outlook_errors.csv'), comment='#')
