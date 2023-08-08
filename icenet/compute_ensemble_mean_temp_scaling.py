@@ -9,6 +9,7 @@ import xarray as xr
 import pandas as pd
 from utils import IceNetDataLoader
 import tensorflow as tf
+import scipy.optimize
 
 '''
 Computes ensemble-mean temperature scaling parameters for each lead time of
