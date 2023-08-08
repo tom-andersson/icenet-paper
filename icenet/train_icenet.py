@@ -198,6 +198,7 @@ custom_objects = {
     'categorical_focal_loss': loss,
     'ConstructLeadtimeAccuracy': ConstructLeadtimeAccuracy,
     'TemperatureScale': models.TemperatureScale,
+    'CustomSeparableConv2D':models.CustomSeparableConv2D
 }
 
 metric = ConstructLeadtimeAccuracy(name='acc_mean', use_all_forecast_months=True)
