@@ -20,7 +20,7 @@ from losses import construct_categorical_focal_loss, weighted_categorical_crosse
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from tensorflow.keras.models import load_model
 from tensorflow.keras.optimizers import Adam
-import models1
+import models
 
 import wandb
 from wandb.keras import WandbCallback
