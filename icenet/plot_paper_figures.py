@@ -21,7 +21,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 ### User input
 ####################################################################
 
-dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
+dataloader_ID = '2021_06_15_1854_icenet_nature_communications'
 architecture_ID = 'unet_tempscale'
 
 plot_tempscaled_ensemble = True
@@ -108,6 +108,7 @@ uncertainty_df = uncertainty_df.set_index(['Model', 'Forecast date']).sort_index
 ice_edge_region_df = ice_edge_region_df.drop('Unnamed: 0', axis=1, errors='ignore')
 ice_edge_region_df['Forecast date'] = pd.to_datetime(ice_edge_region_df['Forecast date'])
 ice_edge_region_df = ice_edge_region_df.set_index(['Leadtime', 'Forecast date'])
+
 
 
 ### SIE errors from the SIO
@@ -1656,134 +1657,6 @@ if True:
 
     print('Done.')
 
-### Supplementary Figure 7
-####################################################################
-
-if True:
-    print('Plotting Supplementary Figure 7... ', end='', flush=True)
-
-    all_ordered_variable_names = dataloader.determine_variable_names()
-
-    # Mean over seed and forecast tate
-    mean_results_df = pap_results_df.groupby(['Leadtime', 'Variable']).mean()
-
-    mean_results_heatmap = mean_results_df.reset_index().\
-        pivot(index='Variable', columns='Leadtime').\
-        reindex(all_ordered_variable_names)['Accuracy drop (%)']
-
-    mean_results_df = mean_results_df.reset_index()
-
-    cbar_kws = {}
-    cbar_kws['label']='Accuracy change (%)'
-
-    verbose_varnames = []
-    short_varnames = mean_results_heatmap.index.values.astype('str')
-    for varname in short_varnames:
-        verbose_varname = utils.make_varname_verbose_any_leadtime(varname)
-        verbose_varnames.append(verbose_varname)
-    mean_results_heatmap.index = verbose_varnames
-
-    with plt.rc_context({'font.size': 9, 'axes.labelsize': 9, 'ytick.labelsize': 9, 'xtick.labelsize': 9}):
-        fig, ax = plt.subplots(figsize=(6, 9))
-
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes('right', size='10%', pad=0.1)
-
-        sns.heatmap(
-            data=mean_results_heatmap,
-            annot=True,
-            annot_kws=dict(fontsize=7),
-            fmt='.2f',
-            ax=ax,
-            cmap='RdBu_r',
-            center=0.,
-            cbar_kws=cbar_kws,
-            vmin=-.5,
-            cbar_ax=cax,
-        )
-        ax.set_xlabel('Lead time (months)')
-        ax.set_ylabel('Input variable name')
-        cax.set_frame_on(True)
-        ax.set_frame_on(True)
-        plt.tight_layout()
-
-    plt.savefig(os.path.join(fig_folder_png, 'supp_fig7.png'))
-    plt.savefig(os.path.join(fig_folder_pdf, 'supp_fig7.pdf'))
-    plt.close()
-
-    print('Done.')
 
 
-### Table 1
-####################################################################
 
-if True:
-    print('Generating Table 1... ', end='', flush=True)
-
-    # Add a 'calendar month' column
-    df_month_numbers = pap_results_df['Forecast date'].dt.month.values
-    df_month_names = month_names[df_month_numbers - 1]
-    pap_results_df['Calendar month'] = df_month_names
-
-    leadtimes_to_plot = [5, 3, 1]
-
-    table_month_names = ['Sept', 'Mar']
-
-    for month in table_month_names:
-
-        pap_month_results_df = pap_results_df.set_index('Calendar month').loc[month]
-
-        # Mean over seed and forecast tate
-        mean_results_df = pap_month_results_df.groupby(['Leadtime', 'Variable']).mean()
-
-        table_df = pd.DataFrame(index=np.arange(1, 6))
-        table_df.index.name = 'Rank'
-
-        fc_month_idx = np.where(month_names == month)[0][0]
-
-        mean_results_df_verbose = mean_results_df.copy().reset_index()
-        mean_results_df_verbose = \
-            mean_results_df_verbose[(mean_results_df_verbose.Variable != 'cos(month)') &
-                                    (mean_results_df_verbose.Variable != 'sin(month)') &
-                                    (mean_results_df_verbose.Variable != 'land')]
-
-        verbose_varnames = []
-        short_varnames = mean_results_df_verbose.Variable.values.astype('str')
-        leadtimes = mean_results_df_verbose.Leadtime.values
-        for varname, leadtime in zip(short_varnames, leadtimes):
-            verbose_varname = utils.make_varname_verbose(varname, leadtime, fc_month_idx)
-            verbose_varnames.append(verbose_varname)
-
-        mean_results_df_verbose.Variable = verbose_varnames
-
-        mean_results_df_verbose = mean_results_df_verbose.drop('Seed', axis=1)
-
-        # Top 5
-        for i, leadtime in enumerate(leadtimes_to_plot):
-
-            initialisation_month = month_names[(fc_month_idx - leadtime) % 12]
-
-            leadtime_sorted_top5_df = \
-                mean_results_df_verbose[mean_results_df_verbose.Leadtime == leadtime].\
-                drop('Leadtime', axis=1).set_index('Variable').sort_values('Accuracy drop (%)')[0:5]
-
-            acc_drops = leadtime_sorted_top5_df.values
-
-            labels = []
-            for drop_i in range(len(acc_drops)):
-                string = leadtime_sorted_top5_df.index[drop_i]
-                string += ' ({:.2f}%) '.format(leadtime_sorted_top5_df.values.ravel()[drop_i])
-                labels.append(string)
-
-            labels = np.array(labels).reshape(leadtime_sorted_top5_df.values.shape)
-
-            table_df['{} intitialisation ({} month leadtime)'.format(initialisation_month, leadtime)] = labels.ravel()
-
-        if month == 'Sept':
-            subtable = 'a'
-        elif month == 'Mar':
-            subtable = 'b'
-
-        table_df.to_csv(os.path.join(fig_folder_table, f'table_1{subtable}.csv'))
-
-    print('Done.')
