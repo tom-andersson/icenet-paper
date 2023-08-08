@@ -34,7 +34,7 @@ are saved to:
 ####################################################################
 
 dataloader_ID = '2023_08_06_2251_icenet_nature_communications'
-architecture_ID = 'oringial_model'
+architecture_ID = 'unet_tempscale'
 
 val_start = '2012-01-01'
 val_end = '2017-12-01'
