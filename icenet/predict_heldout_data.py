@@ -71,7 +71,7 @@ if 'IceNet' in models:
     networks = []
     for network_fpath in network_fpaths:
         print('Loading model from {}... '.format(network_fpath), end='', flush=True)
-        networks.append(load_model(network_fpath, compile=False))
+        networks.append(load_model(network_fpath, compile=False,custom_objects = {"CustomSeparableConv2D": CustomSeparableConv2D}))
         print('Done.')
 
     print("Temperature scaling factors:")
