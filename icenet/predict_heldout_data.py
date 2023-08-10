@@ -60,6 +60,11 @@ if 'IceNet' in models:
 
     network_fpaths = [os.path.join(network_h5_files_folder, f) for f in
                       sorted(os.listdir(network_h5_files_folder)) if network_regex.match(f)]
+    # Confirm that network files been found
+    if len(network_fpaths) == 0:
+        raise ValueError(f"No IceNet network files found in {network_h5_files_folder} using "
+                         f"regex {network_regex.pattern}. Are you sure `tempscaling_used` "
+                         f"should be {tempscaling_used}?")
 
     ensemble_seeds = [network_regex.match(f)[1] for f in
                       sorted(os.listdir(network_h5_files_folder)) if network_regex.match(f)]
