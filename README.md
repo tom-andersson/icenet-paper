@@ -227,7 +227,11 @@ its ice edge bounding ability. Results are saved in `results/uncertainty_results
 
 ### 8) Generate the paper figures and tables
 
-- `python3 icenet/plot_paper_figures.py`. Figures are saved in `figures/paper_figures/`.
+- `python3 icenet/plot_paper_figures.py`. Figures are saved in `figures/paper_figures/`. Note, you will need the Sea Ice Outlook
+error CSV file to plot Supp. Fig. 5:
+```
+wget -O data/sea_ice_outlook_errors.csv 'https://ramadda.data.bas.ac.uk/repository/entry/get/sea_ice_outlook_errors.csv?entryid=synth%3A71820e7d-c628-4e32-969f-464b7efb187c%3AL3Jlc3VsdHMvb3V0bG9va19lcnJvcnMvc2VhX2ljZV9vdXRsb29rX2Vycm9ycy5jc3Y%3D'
+```
 
 ### Misc
 
