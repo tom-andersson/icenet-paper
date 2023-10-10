@@ -21,7 +21,7 @@ class.
 
 A demonstrator of this codebase (downloading pre-trained IceNet networks,
 then generating and analysing forecasts) produced by [@acocac](https://github.com/acocac) can be found in [The Environmental
-AI Book](https://acocac.github.io/environmental-ai-book/polar/modelling/polar-modelling-icenet.html).
+Data Science Book](https://edsbook.org/notebooks/gallery/ac327c3a-5264-40a2-8c6e-1e8d7c4b37ef/notebook).
 
 ![](figures/architecture.png)
 
